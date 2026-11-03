@@ -111,12 +111,12 @@ Dado que el repositorio de GitHub no debe almacenar gigabytes de archivos de aud
 #### 1. Crear el Bucket en Cloudflare
 1. Inicia sesión en el [Cloudflare Dashboard](https://dash.cloudflare.com/).
 2. En el menú lateral izquierdo, ve a **R2** → Haz clic en **Create bucket**.
-3. Nombra tu bucket (ejemplo: `yuki-learning-assets`) y selecciona la ubicación predeterminada (automática).
+3. Nombra tu bucket (ejemplo: `yuki-learning-resources`) y selecciona la ubicación predeterminada (automática).
 4. En la pestaña **Settings** del bucket, ve a la sección **Public Access** y haz clic en **Allow Access** para habilitar el dominio público R2 (`.r2.dev`) o conecta tu propio dominio personalizado (ej. `assets.tudominio.com`).
 
 #### 2. Cargar Recursos usando la Interfaz Web (Fácil)
 * Si vas a cargar carpetas específicas como lecciones de audio o libros de gramática:
-  * Entra en tu bucket `yuki-learning-assets` en el panel de Cloudflare.
+  * Entra en tu bucket `yuki-learning-resources` en el panel de Cloudflare.
   * Haz clic en **Upload** → **Upload Folder** o arrastra directamente las carpetas (`GRAMATICA/`, `AUDIO/`, etc.).
 
 #### 3. Sincronización Automática por Línea de Comandos (Recomendado para Grandes Volúmenes)
@@ -136,18 +136,21 @@ Para sincronizar automáticamente carpetas completas desde tu computadora hacia 
    access_key_id = <TU_ACCESS_KEY_ID>
    secret_access_key = <TU_SECRET_ACCESS_KEY>
    endpoint = https://<TU_ACCOUNT_ID>.r2.cloudflarestorage.com
-   acl = private
+   no_check_bucket = true
    ```
 4. Ejecuta el comando de sincronización:
    ```bash
-   # Sincroniza la carpeta local de audios con tu bucket de R2
-   rclone sync "./AUDIO" "r2:yuki-learning-assets/audio" --progress
+   # Sincroniza la carpeta local de audios de gramática con tu bucket de R2
+   rclone sync "./GRAMATICA" "r2:yuki-learning-resources/gramatica" --progress
+
+   # Sincroniza el entrenamiento y audios de exámenes JLPT
+   rclone sync "./ENTRENAMIENTO JLPT" "r2:yuki-learning-resources/entrenamiento-jlpt" --progress
    ```
 
 ##### Opción B: Usando AWS CLI
 ```bash
 # Sincronizar audios locales a Cloudflare R2
-aws s3 sync "./GRAMATICA" s3://yuki-learning-assets/gramatica --endpoint-url https://<TU_ACCOUNT_ID>.r2.cloudflarestorage.com
+aws s3 sync "./GRAMATICA" s3://yuki-learning-resources/gramatica --endpoint-url https://<TU_ACCOUNT_ID>.r2.cloudflarestorage.com
 ```
 
 #### 4. Conectar los Audios de R2 con la Plataforma Web
