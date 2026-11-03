@@ -17,16 +17,23 @@ import {
   UserCog,
   RotateCcw,
 } from 'lucide-react';
-import { UserProfile, SRSDueSummary, SRSStageBreakdown } from '../types';
+import { UserProfile, SRSDueSummary, SRSStageBreakdown, LessonNode, JLPTLevel } from '../types';
 import { formatNumber } from '../lib/format';
+
+interface RecommendedLessonInfo {
+  lesson: LessonNode;
+  nivel_jlpt: JLPTLevel;
+  nivelTitulo: string;
+}
 
 interface DashboardProps {
   user?: UserProfile;
   srsSummary?: SRSDueSummary;
   srsStages?: SRSStageBreakdown;
+  recommendedLesson?: RecommendedLessonInfo | null;
   onStartReview?: () => void;
   onOpenCurriculum?: () => void;
-  onContinueLesson?: () => void;
+  onContinueLesson?: (lessonId?: string) => void;
   onEditProfile?: () => void;
   onResetProfile?: () => void;
 }
@@ -57,6 +64,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     maestro: 32,
     iluminado: 15,
   },
+  recommendedLesson = null,
   onStartReview = () => console.log('Iniciando sesión SRS...'),
   onOpenCurriculum = () => console.log('Abriendo mapa de estudios...'),
   onContinueLesson = () => console.log('Continuando lección activa...'),
@@ -88,8 +96,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center font-bold text-2xl text-white shadow-lg shadow-rose-500/20 ring-2 ring-slate-800">
-                {user.avatar_icon || user.nombre.charAt(0)}
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center font-bold text-2xl text-white shadow-lg shadow-rose-500/20 ring-2 ring-slate-800 overflow-hidden">
+                {user.avatar_url ? (
+                  <img src={user.avatar_url} alt={user.nombre} className="w-full h-full object-cover" />
+                ) : (
+                  user.avatar_icon || user.nombre.charAt(0)
+                )}
               </div>
               <span className="absolute -bottom-1 -right-1 bg-amber-400 text-slate-950 font-black text-[10px] px-1.5 py-0.5 rounded-full uppercase border border-slate-900">
                 {user.nivel_actual_jlpt}
@@ -302,7 +314,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-indigo-400" />
-                  <h3 className="font-bold text-white text-sm">Currículo JLPT N5</h3>
+                  <h3 className="font-bold text-white text-sm">
+                    {recommendedLesson ? recommendedLesson.nivelTitulo : `Currículo JLPT ${user.nivel_actual_jlpt}`}
+                  </h3>
                 </div>
                 <button
                   onClick={onOpenCurriculum}
@@ -312,24 +326,41 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </button>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50 space-y-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400">
-                  Lección 4 · Gramática
-                </span>
-                <h4 className="text-sm font-bold text-white">
-                  Partículas は (wa) y が (ga)
-                </h4>
-                <p className="text-xs text-slate-400 line-clamp-2">
-                  Domina la diferencia clave entre el tópico de la oración y el sujeto focal.
-                </p>
-              </div>
+              {recommendedLesson ? (
+                <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400">
+                      Lección {recommendedLesson.lesson.orden} · {recommendedLesson.lesson.tipo.toUpperCase()}
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      +{recommendedLesson.lesson.xp_recompensa} XP
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">
+                    {recommendedLesson.lesson.titulo}
+                  </h4>
+                  <p className="text-xs text-slate-400 line-clamp-2">
+                    {recommendedLesson.lesson.descripcion}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-800/40 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> ¡Al día!
+                  </span>
+                  <h4 className="text-sm font-bold text-white">Todas las lecciones completadas</h4>
+                  <p className="text-xs text-slate-400">
+                    Revisa el mapa curricular para explorar niveles avanzados o reforzar en SRS.
+                  </p>
+                </div>
+              )}
             </div>
 
             <button
-              onClick={onContinueLesson}
+              onClick={() => onContinueLesson && onContinueLesson(recommendedLesson?.lesson.id)}
               className="mt-4 w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2"
             >
-              <span>Continuar Lección</span>
+              <span>{recommendedLesson ? 'Continuar Lección' : 'Explorar Currículo'}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

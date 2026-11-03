@@ -16,10 +16,11 @@ import { SRSFlashcardItem, SRSRating } from '../types';
 import { calculateNextReview, getEtapaSRS } from '../lib/srs';
 import { MOCK_FLASHCARDS } from '../lib/mockData';
 import { soundManager } from '../lib/audio';
+import { updateCardInSRSDeck } from '../lib/storage';
 
 interface SRSReviewProps {
   items?: SRSFlashcardItem[];
-  onFinishSession?: (reviewedCount: number, xpEarned: number) => void;
+  onFinishSession?: (reviewedCount: number, xpEarned: number, updatedDeck?: SRSFlashcardItem[]) => void;
   onClose?: () => void;
 }
 
@@ -38,9 +39,16 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  const currentItem = deck[currentIdx];
+  useEffect(() => {
+    setDeck(items);
+    setCurrentIdx(0);
+    setIsFlipped(false);
+    setIsCompleted(false);
+  }, [items]);
+
   const totalDeck = deck.length;
-  const progressPercent = Math.round((currentIdx / totalDeck) * 100);
+  const currentItem = deck[currentIdx];
+  const progressPercent = totalDeck > 0 ? Math.round((currentIdx / totalDeck) * 100) : 100;
 
   // Reproducción de audio nativo híbrido (MP3 original + fallback TTS)
   const playAudio = (text: string, audioUrl?: string) => {
@@ -83,8 +91,10 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isFlipped, isCompleted, currentIdx]);
 
-  // Manejo de la calificación SRS con feedback sonoro
+  // Manejo de la calificación SRS con feedback sonoro y persistencia inmediata
   const handleRate = (rating: SRSRating) => {
+    if (!currentItem) return;
+
     if (rating === 'facil' || rating === 'bien') {
       soundManager.playCorrectSound();
     } else {
@@ -95,7 +105,12 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
     if (rating === 'bien') setGoodCount((prev) => prev + 1);
     if (rating === 'dificil') setHardCount((prev) => prev + 1);
 
-    setReviewedCount((prev) => prev + 1);
+    // Persistir tarjeta inmediatamente en localStorage
+    const { updatedDeck } = updateCardInSRSDeck(deck, currentItem.id, rating);
+    setDeck(updatedDeck);
+
+    const newReviewedCount = reviewedCount + 1;
+    setReviewedCount(newReviewedCount);
 
     if (currentIdx + 1 < totalDeck) {
       setIsFlipped(false);
@@ -103,10 +118,35 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
     } else {
       setIsCompleted(true);
       soundManager.playLevelUpSound();
-      const totalXP = (reviewedCount + 1) * 10;
-      onFinishSession(reviewedCount + 1, totalXP);
+      const totalXP = newReviewedCount * 10;
+      onFinishSession(newReviewedCount, totalXP, updatedDeck);
     }
   };
+
+  // Estado vacío: Si no hay tarjetas pendientes
+  if (totalDeck === 0) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4 font-sans">
+        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 text-center space-y-6 shadow-2xl">
+          <div className="w-20 h-20 mx-auto rounded-3xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <CheckCircle2 className="w-10 h-10" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-2xl font-black text-white">¡Todo al día!</h2>
+            <p className="text-xs md:text-sm text-slate-400">
+              No tienes tarjetas pendientes de repaso en este momento. Las tarjetas se activarán automáticamente según tu curva de olvido y algoritmo SRS.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 transition-all active:scale-[0.98]"
+          >
+            Volver al Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Calcular intervalos proyectados para los 3 botones
   const intervaloDificil = currentItem ? calculateNextReview(currentItem.nivelMemoriaActual, 'dificil').etiquetaIntervalo : '4h';

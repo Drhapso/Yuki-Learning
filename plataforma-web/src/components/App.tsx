@@ -17,16 +17,21 @@ import { ActiveLesson } from './ActiveLesson';
 import { SRSReview } from './SRSReview';
 import { ProfileSetupModal } from './ProfileSetupModal';
 import {
-  MOCK_SRS_SUMMARY,
-  MOCK_SRS_STAGES,
-  MOCK_CURRICULUM,
-  MOCK_ACTIVE_LESSON,
-  MOCK_FLASHCARDS,
-} from '../lib/mockData';
-import { UserProfile, SRSDueSummary } from '../types';
+  loadStoredProfile,
+  saveStoredProfile,
+  loadStoredCurriculum,
+  saveStoredCurriculum,
+  loadStoredSRSDeck,
+  saveStoredSRSDeck,
+  calculateSRSMetrics,
+  getRecommendedLesson,
+  completeLessonAndUnlockNext,
+  resetDeviceData,
+  getInitialCurriculum,
+} from '../lib/storage';
+import { getLessonContentById } from '../lib/lessonsData';
+import { UserProfile, CurriculumLevel, SRSFlashcardItem, JLPTLevel } from '../types';
 import { formatNumber } from '../lib/format';
-
-const STORAGE_PROFILE_KEY = 'nihongo_user_profile_v1';
 
 const DEFAULT_GUEST_USER: UserProfile = {
   id: 'usr_device_guest',
@@ -47,51 +52,55 @@ export const App: React.FC = () => {
   const [mounted, setMounted] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<'dashboard' | 'curriculum' | 'lesson' | 'review'>('dashboard');
   const [user, setUser] = useState<UserProfile>(DEFAULT_GUEST_USER);
-  const [srsSummary, setSrsSummary] = useState<SRSDueSummary>(MOCK_SRS_SUMMARY);
+  const [curriculum, setCurriculum] = useState<CurriculumLevel[]>([]);
+  const [srsDeck, setSrsDeck] = useState<SRSFlashcardItem[]>([]);
+  const [activeLessonId, setActiveLessonId] = useState<string>('intro_01');
   const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
   const [canCancelModal, setCanCancelModal] = useState<boolean>(false);
 
-  // Detección de dispositivo y carga del perfil específico de este navegador
+  // Carga inicial y sincronización con el almacenamiento de este dispositivo
   useEffect(() => {
     setMounted(true);
-    try {
-      const stored = localStorage.getItem(STORAGE_PROFILE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setUser(parsed);
-      } else {
-        // Dispositivo nuevo o configuración reiniciada: abre el asistente para crear perfil propio
-        setShowSetupModal(true);
-        setCanCancelModal(false);
-      }
-    } catch (e) {
-      console.error('Error al leer el perfil del dispositivo:', e);
+    const stored = loadStoredProfile();
+    if (stored) {
+      setUser(stored);
+      const storedCurr = loadStoredCurriculum(stored.nivel_actual_jlpt);
+      setCurriculum(storedCurr);
+      const storedDeck = loadStoredSRSDeck();
+      setSrsDeck(storedDeck);
+    } else {
+      // Dispositivo nuevo o configuración limpia: inicializar estado limpio y solicitar perfil
+      const { freshProfile, freshCurriculum, freshDeck } = resetDeviceData('INTRO');
+      setUser(freshProfile);
+      setCurriculum(freshCurriculum);
+      setSrsDeck(freshDeck);
       setShowSetupModal(true);
+      setCanCancelModal(false);
     }
   }, []);
 
-  // Guardar nuevo perfil o actualización en localStorage de este dispositivo
+  // Guardar nuevo perfil o actualización en localStorage
   const handleSaveProfile = (newProfile: UserProfile) => {
     setUser(newProfile);
-    try {
-      localStorage.setItem(STORAGE_PROFILE_KEY, JSON.stringify(newProfile));
-    } catch (e) {
-      console.error('Error al guardar el perfil del dispositivo:', e);
-    }
+    saveStoredProfile(newProfile);
+
+    // Sincronizar currículo según el nivel seleccionado
+    const updatedCurriculum = loadStoredCurriculum(newProfile.nivel_actual_jlpt);
+    setCurriculum(updatedCurriculum);
     setShowSetupModal(false);
   };
 
-  // Reiniciar la configuración para crear un nuevo perfil desde cero en este dispositivo
+  // Reiniciar la configuración para comenzar con un nuevo perfil desde cero
   const handleResetProfile = () => {
     if (confirm('¿Deseas reiniciar la configuración en este dispositivo y crear tu propio perfil?')) {
-      try {
-        localStorage.removeItem(STORAGE_PROFILE_KEY);
-      } catch (e) {
-        console.error('Error al reiniciar:', e);
-      }
-      setUser(DEFAULT_GUEST_USER);
+      const { freshProfile, freshCurriculum, freshDeck } = resetDeviceData('INTRO');
+      setUser(freshProfile);
+      setCurriculum(freshCurriculum);
+      setSrsDeck(freshDeck);
+      setActiveLessonId('intro_01');
       setShowSetupModal(true);
       setCanCancelModal(false);
+      setCurrentView('dashboard');
     }
   };
 
@@ -123,31 +132,34 @@ export const App: React.FC = () => {
         xp_proximo_nivel: proximoNivelXP,
       };
 
-      try {
-        localStorage.setItem(STORAGE_PROFILE_KEY, JSON.stringify(updated));
-      } catch (e) {
-        console.error('Error al persistir XP:', e);
-      }
-
+      saveStoredProfile(updated);
       return updated;
     });
   };
 
-  // Manejador al finalizar una lección
+  // Manejador al finalizar una lección: desbloquea la siguiente y suma XP
   const handleFinishLesson = (xpGanada: number) => {
     addXP(xpGanada);
+    if (activeLessonId && curriculum.length > 0) {
+      const { updatedCurriculum } = completeLessonAndUnlockNext(curriculum, activeLessonId);
+      setCurriculum(updatedCurriculum);
+    }
     setCurrentView('curriculum');
   };
 
   // Manejador al finalizar el repaso SRS
-  const handleFinishReview = (count: number, xpGanada: number) => {
+  const handleFinishReview = (count: number, xpGanada: number, updatedDeck?: SRSFlashcardItem[]) => {
     addXP(xpGanada);
-    setSrsSummary((prev) => ({
-      ...prev,
-      total: Math.max(0, prev.total - count),
-    }));
+    if (updatedDeck) {
+      setSrsDeck(updatedDeck);
+    }
     setCurrentView('dashboard');
   };
+
+  // Métricas dinámicas calculadas en tiempo real desde localStorage
+  const srsMetrics = calculateSRSMetrics(srsDeck);
+  const recommendedLesson = getRecommendedLesson(curriculum);
+  const activeLessonContent = getLessonContentById(activeLessonId);
 
   if (!mounted) {
     return (
@@ -225,9 +237,9 @@ export const App: React.FC = () => {
             >
               <Brain className="w-3.5 h-3.5" />
               <span>Repaso SRS</span>
-              {srsSummary.total > 0 && (
+              {srsMetrics.summary.total > 0 && (
                 <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">
-                  {srsSummary.total}
+                  {srsMetrics.summary.total}
                 </span>
               )}
             </button>
@@ -245,13 +257,21 @@ export const App: React.FC = () => {
               <span>{formatNumber(user.xp_total)}</span>
             </div>
 
-            {/* Avatar interactivo en Navbar */}
+            {/* Avatar interactivo en Navbar (Fotografía personalizada o ícono) */}
             <button
               onClick={handleEditProfile}
-              className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-sm shadow-md shadow-rose-500/20 hover:scale-105 transition-transform"
+              className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-sm shadow-md shadow-rose-500/20 hover:scale-105 transition-transform overflow-hidden border border-slate-700"
               title={`Perfil: ${user.nombre} (Clic para editar)`}
             >
-              {user.avatar_icon || user.nombre.charAt(0)}
+              {user.avatar_url ? (
+                <img
+                  src={user.avatar_url}
+                  alt={user.nombre}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{user.avatar_icon || user.nombre.charAt(0)}</span>
+              )}
             </button>
           </div>
 
@@ -265,11 +285,15 @@ export const App: React.FC = () => {
         {currentView === 'dashboard' && (
           <Dashboard
             user={user}
-            srsSummary={srsSummary}
-            srsStages={MOCK_SRS_STAGES}
+            srsSummary={srsMetrics.summary}
+            srsStages={srsMetrics.stages}
+            recommendedLesson={recommendedLesson}
             onStartReview={() => setCurrentView('review')}
             onOpenCurriculum={() => setCurrentView('curriculum')}
-            onContinueLesson={() => setCurrentView('lesson')}
+            onContinueLesson={(targetId) => {
+              setActiveLessonId(targetId || recommendedLesson?.lesson.id || 'intro_01');
+              setCurrentView('lesson');
+            }}
             onEditProfile={handleEditProfile}
             onResetProfile={handleResetProfile}
           />
@@ -277,15 +301,18 @@ export const App: React.FC = () => {
 
         {currentView === 'curriculum' && (
           <CurriculumMap
-            curriculum={MOCK_CURRICULUM}
-            onSelectLesson={(id) => setCurrentView('lesson')}
+            curriculum={curriculum}
+            onSelectLesson={(id) => {
+              setActiveLessonId(id);
+              setCurrentView('lesson');
+            }}
             onBackToDashboard={() => setCurrentView('dashboard')}
           />
         )}
 
         {currentView === 'lesson' && (
           <ActiveLesson
-            lesson={MOCK_ACTIVE_LESSON}
+            lesson={activeLessonContent}
             onFinishLesson={handleFinishLesson}
             onClose={() => setCurrentView('curriculum')}
           />
@@ -293,7 +320,7 @@ export const App: React.FC = () => {
 
         {currentView === 'review' && (
           <SRSReview
-            items={MOCK_FLASHCARDS}
+            items={srsMetrics.dueCards.length > 0 ? srsMetrics.dueCards : srsDeck}
             onFinishSession={handleFinishReview}
             onClose={() => setCurrentView('dashboard')}
           />

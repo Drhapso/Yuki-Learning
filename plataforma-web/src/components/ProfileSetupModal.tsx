@@ -9,6 +9,9 @@ import {
   Flame,
   Check,
   X,
+  Camera,
+  Upload,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { UserProfile, JLPTLevel } from '../types';
 
@@ -33,9 +36,28 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   const [nivelJLPT, setNivelJLPT] = useState<JLPTLevel>(initialProfile?.nivel_actual_jlpt || 'INTRO');
   const [metaDiaria, setMetaDiaria] = useState<number>(initialProfile?.meta_diaria || 20);
   const [avatar, setAvatar] = useState<string>(initialProfile?.avatar_icon || '🦊');
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(initialProfile?.avatar_url);
   const [error, setError] = useState<string>('');
 
   if (!isOpen) return null;
+
+  const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 3 * 1024 * 1024) {
+      setError('La fotografía seleccionada debe pesar menos de 3MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const base64 = uploadEvent.target?.result as string;
+      setAvatarUrl(base64);
+      setError('');
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +71,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
       nombre: nombre.trim(),
       email: initialProfile?.email || `${nombre.toLowerCase().replace(/\s+/g, '')}@nihongo.local`,
       avatar_icon: avatar,
+      avatar_url: avatarUrl,
       xp_total: initialProfile?.xp_total ?? 0,
       racha_actual: initialProfile?.racha_actual ?? 1,
       racha_maxima: initialProfile?.racha_maxima ?? 1,
@@ -76,18 +99,35 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
           </button>
         )}
 
-        {/* Encabezado */}
+        {/* Encabezado con Vista Previa del Avatar / Fotografía */}
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-rose-500/20">
-            {avatar}
+          <div className="relative w-20 h-20 mx-auto">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center text-4xl shadow-lg shadow-rose-500/20 overflow-hidden ring-2 ring-slate-700">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                avatar
+              )}
+            </div>
+            {avatarUrl && (
+              <button
+                type="button"
+                onClick={() => setAvatarUrl(undefined)}
+                className="absolute -top-1 -right-1 p-1 rounded-full bg-rose-600 hover:bg-rose-500 text-white shadow-md"
+                title="Eliminar foto y usar icono"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
+
           <div>
             <h2 className="text-2xl font-black text-white tracking-tight">
               {initialProfile ? 'Actualizar Mi Perfil' : '¡Bienvenido a NihongoPlatform!'}
             </h2>
             <p className="text-xs md:text-sm text-slate-400">
               {initialProfile
-                ? 'Modifica tus preferencias para este dispositivo.'
+                ? 'Modifica tu fotografía, nombre y preferencias para este dispositivo.'
                 : 'Crea tu perfil en este dispositivo para empezar tu aprendizaje personalizado.'}
             </p>
           </div>
@@ -116,19 +156,49 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             {error && <p className="text-xs text-rose-400 font-semibold">{error}</p>}
           </div>
 
-          {/* 2. Selector de Avatar Temático */}
+          {/* 2. Carga de Fotografía Personal */}
+          <div className="space-y-2 p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/50">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Camera className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Fotografía o Imagen de Perfil:</span>
+            </label>
+            <div className="flex items-center gap-2">
+              <label className="flex-1 cursor-pointer py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors">
+                <Upload className="w-4 h-4 text-indigo-400" />
+                <span>{avatarUrl ? 'Cambiar fotografía...' : 'Subir imagen desde tu equipo'}</span>
+                <input type="file" accept="image/*" onChange={handleImageFile} className="hidden" />
+              </label>
+              {avatarUrl && (
+                <button
+                  type="button"
+                  onClick={() => setAvatarUrl(undefined)}
+                  className="py-2.5 px-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 hover:bg-rose-900/60 text-xs font-semibold transition-colors"
+                >
+                  Quitar foto
+                </button>
+              )}
+            </div>
+            <p className="text-[10px] text-slate-400">
+              Sube tu propia foto (JPG, PNG o WebP, máx. 3MB) o elige uno de los avatares temáticos debajo.
+            </p>
+          </div>
+
+          {/* 3. Selector de Avatar Temático Japonés */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Selecciona tu avatar:
+              O elige un avatar japonés:
             </label>
             <div className="grid grid-cols-5 gap-2">
               {AVATARS.map((item) => (
                 <button
                   key={item}
                   type="button"
-                  onClick={() => setAvatar(item)}
+                  onClick={() => {
+                    setAvatar(item);
+                    setAvatarUrl(undefined); // Si elige emoji, deselecciona la foto
+                  }}
                   className={`p-2.5 rounded-xl text-xl flex items-center justify-center transition-all ${
-                    avatar === item
+                    !avatarUrl && avatar === item
                       ? 'bg-rose-500/20 border-2 border-rose-500 scale-105 shadow-md shadow-rose-500/10'
                       : 'bg-slate-800/60 border border-slate-700/60 hover:bg-slate-800 text-slate-400'
                   }`}
@@ -139,7 +209,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             </div>
           </div>
 
-          {/* 3. Nivel JLPT Inicial */}
+          {/* 4. Nivel JLPT Inicial */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
               <GraduationCap className="w-3.5 h-3.5 text-indigo-400" />
@@ -174,7 +244,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             </div>
           </div>
 
-          {/* 4. Meta Diaria de Estudio */}
+          {/* 5. Meta Diaria de Estudio */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-emerald-400" />
@@ -223,4 +293,3 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
 };
 
 export default ProfileSetupModal;
-
