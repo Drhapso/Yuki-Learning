@@ -1,0 +1,121 @@
+=============================================================================
+YUKI LEARNING 🌸 - PLAN DE EJECUCIÓN PEDAGÓGICA Y TÉCNICA (NIVELES N4 A N1)
+=============================================================================
+Versión actual de la plataforma: v1.0.0-beta
+Fecha de creación: 3 de Noviembre de 2026
+Objetivo: Hoja de ruta paso a paso para la expansión completa de contenidos
+y funcionalidades desde JLPT N4 hasta JLPT N1.
+
+=============================================================================
+1. DIAGNÓSTICO Y AUDITORÍA DE MATERIALES DISPONIBLES
+=============================================================================
+
+Resumen de Cobertura actual por Nivel:
+
+| Nivel JLPT       | Cobertura  | Estado          | Recursos Disponibles en Proyecto / Cloudflare R2 |
+|------------------|------------|-----------------|--------------------------------------------------|
+| Intro / Pre-N5   | 100%       | Completado      | Hiragana, Katakana, 28 diccionarios ilustrados, fonética NHK. |
+| JLPT N5          | 100%       | Completado      | Irodori A1 (18 temas), Marugoto Starter A1, audios y exámenes oficiales N5. |
+| JLPT N4          | 100%       | Listo p/ poblar | Irodori A2-1 (18 temas), Irodori A2-2 (18 temas), Marugoto Elementary A2. |
+| JLPT N3          | 85% - 90%  | Muy Fuerte      | Marugoto Pre-Intermediate (A2-B1), Intermediate 1 y 2 (B1), audios, exámenes N3. |
+| JLPT N2          | 65% - 70%  | Intermedio      | Simulacros oficiales JLPT N2 reales (listening, lectura, gramática, respuestas). |
+| JLPT N1          | 45% - 50%  | Enfoque Examen  | Exámenes oficiales JLPT N1 completos (audios de alta velocidad, listening script). |
+
+-----------------------------------------------------------------------------
+Detalle de Recursos y Brechas Pedagógicas:
+
+• Nivel N4 (100% Cubierto en activos):
+  - Recursos: Irodori A2-1 y A2-2 (36 lecciones completas con audio nativo en Cloudflare R2),
+    Marugoto Elementary A2 Niveles 1 y 2, simulacros oficiales JLPT N4.
+  - Brechas: Ninguna en cuanto a material fuente.
+  - Tarea pendiente: Extraer y codificar las lecciones en 'lessonsData.ts' y sumar 200 kanjis al SRS.
+
+• Nivel N3 (85-90% Cubierto en activos):
+  - Recursos: Marugoto B1 completo con audios nativos, guías de Tae Kim, exámenes oficiales N3.
+  - Brechas: Listado estructurado de los ~350 Kanjis de N3 para el motor SRS.
+  - Solución: Generar e integrar el mazo de kanjis N3 con lecturas On/Kun y palabras de ejemplo.
+
+• Nivel N2 (65-70% Cubierto en activos):
+  - Recursos: Exámenes oficiales reales con listening completo y soluciones, gramática avanzada Tae Kim.
+  - Brechas: Manual metodológico lección a lección (estilo Shin Kanzen Master N2) y ~350 Kanjis N2.
+  - Solución: Modo simulador de exámenes directo + módulos temáticos de gramática sutil.
+
+• Nivel N1 (45-50% Cubierto en activos):
+  - Recursos: Baterías completas de examen oficial con transcripciones (Listening Script) y respuestas.
+  - Brechas: Expresiones de 4 caracteres (Yojijukugo), modismos arcaicos/literarios, lecturas de prensa.
+  - Solución: Simulador de examen cronometrado + compendio de expresiones idiomáticas avanzadas.
+
+=============================================================================
+2. PLAN DE EJECUCIÓN POR ETAPAS (PRÓXIMAS SESIONES)
+=============================================================================
+
+-----------------------------------------------------------------------------
+ETAPA 2 (Próxima Sesión - Versión 1.1: Expansión JLPT N4)
+-----------------------------------------------------------------------------
+Objetivo: Permitir al usuario avanzar de N5 a N4 con el mismo nivel de interactividad y audio.
+
+1. Poblar Lecciones de N4 en 'lessonsData.ts':
+   - Estructurar 36 lecciones basadas en Irodori A2-1 y A2-2.
+   - Puntos gramaticales clave a incluir:
+     * Forma de diccionario (informal / casual).
+     * Forma negativa informal (-nai) y expresiones de obligación (-nakereba narimasen).
+     * Forma pasada informal (-ta) y experiencia (-ta koto ga aru).
+     * Comparaciones y preferencias (yori, hou ga ii, ichiban).
+     * Verbos de dar y recibir (ageru, morau, kureru).
+     * Forma potencial (dekiru, hanaseru) y volitivo.
+     * Condicionales básicos e intermedios (~tara, ~ba, ~to, ~nara).
+     * Verbos transitivos e intransitivos comunes.
+
+2. Conexión de Audios N4 con Cloudflare R2:
+   - Configurar las rutas de audio de Irodori A2 y Marugoto Elementary hacia el bucket R2
+     'yuki-learning-resources/gramatica/IRODORI/A2-1/...' y 'A2-2/...'.
+
+3. Expansión del Mazo SRS de Kanjis N4:
+   - Añadir los 200 kanjis correspondientes a N4 con animación de trazos (SVG o Stroke Order),
+     lecturas Onyomi / Kunyomi y oraciones contextuales.
+
+-----------------------------------------------------------------------------
+ETAPA 3 (Versión 1.2: Expansión JLPT N3 - Nivel Intermedio)
+-----------------------------------------------------------------------------
+Objetivo: Salir de la conversación básica e introducir pensamiento y debate en japonés.
+
+1. Poblar Lecciones de N3 en 'lessonsData.ts':
+   - Estructuración basada en Marugoto Pre-Intermediate e Intermediate 1 y 2 (B1).
+   - Puntos gramaticales:
+     * Voz Pasiva, Causativa y Causativa-Pasiva (rareru, saseru, saserareru).
+     * Conjetura, rumor y apariencia (sou, rashii, mitai, you da).
+     * Expresiones de esfuerzo, intención y cambio gradual (you ni suru, you ni naru).
+     * Introducción sistemática al Keigo básico (Sonkeigo y Kenjougo).
+
+2. Kanjis N3 en el Motor SRS:
+   - Incorporar los ~350 Kanjis de N3 acumulando ~650 kanjis totales en la plataforma.
+
+-----------------------------------------------------------------------------
+ETAPA 4 (Versión 1.3: Módulo "Simulador de Examen Oficial JLPT" N2 y N1)
+-----------------------------------------------------------------------------
+Objetivo: Aprovechar de inmediato el 100% del material existente de exámenes oficiales de N2 y N1.
+
+1. Interfaz del Simulador de Examen:
+   - Vista especializada de simulación de prueba real con cronómetro regresivo oficial.
+   - Secciones del examen:
+     * Choukai (Comprensión Auditiva): Reproductor de audio nativo sincronizado con las preguntas.
+     * Dokkai (Comprensión de Lectura): Textos largos y ensayos con preguntas de opción múltiple.
+     * Gengo Chishiki (Vocabulario, Kanji y Gramática).
+   - Cálculo automático de puntaje por sección y diagnóstico de aprobado/reprobado según baremo JLPT.
+
+-----------------------------------------------------------------------------
+ETAPA 5 (Versión 2.0: Perfeccionamiento y Contenido Avanzado N2 / N1)
+-----------------------------------------------------------------------------
+1. Integración de gramática avanzada (Shin Kanzen Master / Sou Matome N2 y N1).
+2. Compendio interactivo de Yojijukugo (cuatro caracteres) y modismos japoneses.
+3. Biblioteca de lecturas auténticas (ensayos culturales y artículos adaptados).
+
+=============================================================================
+3. CHECKLIST INMEDIATO PARA LA PRÓXIMA SESIÓN
+=============================================================================
+[ ] Paso 1: Abrir 'lessonsData.ts' y crear la estructura modular para el bloque N4.
+[ ] Paso 2: Configurar las primeras 10 lecciones de N4 con audios vinculados a Cloudflare R2.
+[ ] Paso 3: Añadir lote de 100 kanjis de N4 a 'src/lib/srs.ts' o 'kanjiData.ts'.
+[ ] Paso 4: Validar en mobile y desktop la navegación fluida entre niveles N5 y N4.
+[ ] Paso 5: Probar compilación estática ('npm run build') y verificar despliegue en Cloudflare Pages.
+=============================================================================
