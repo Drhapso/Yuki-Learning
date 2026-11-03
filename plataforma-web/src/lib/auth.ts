@@ -277,3 +277,4 @@ export function importProgressSyncPayload(
     return { success: false, error: 'Código de sincronización corrupto o inválido. Verifica haberlo copiado completo.' };
   }
 }
+

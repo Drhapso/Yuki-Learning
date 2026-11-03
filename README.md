@@ -1,5 +1,6 @@
 # Yuki Learning 🌸 · Tu Camino Hacia la Fluidez en Japonés
 
+[![Versión](https://img.shields.io/badge/Versión-v1.0.0--beta-blue?style=for-the-badge&logo=github)](https://github.com/Drhapso/Yuki-Learning)
 [![Japonés JLPT](https://img.shields.io/badge/Japonés-JLPT_N5_a_N1-rose?style=for-the-badge&logo=google-translate)](https://es.wikipedia.org/wiki/Japanese-Language_Proficiency_Test)
 [![Gamificación](https://img.shields.io/badge/Aprende_Jugando-XP_&_Rachas-amber?style=for-the-badge&logo=sparkles)](https://es.wikipedia.org/wiki/Gamificaci%C3%B3n)
 [![Repaso Espaciado](https://img.shields.io/badge/Método_Científico-SRS_Flashcards-indigo?style=for-the-badge&logo=brain)](https://es.wikipedia.org/wiki/Repetici%C3%B3n_espaciada)

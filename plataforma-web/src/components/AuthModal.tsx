@@ -554,3 +554,4 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 };
 
 export default AuthModal;
+

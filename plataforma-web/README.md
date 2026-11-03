@@ -1,5 +1,6 @@
 # Yuki Learning 🌸 · Código Fuente Frontend (Next.js 16 + React 19)
 
+[![Versión](https://img.shields.io/badge/Versión-v1.0.0--beta-indigo?style=flat&logo=github)](https://github.com/Drhapso/Yuki-Learning)
 [![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.3-blue?style=flat&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)

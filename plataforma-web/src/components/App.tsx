@@ -222,6 +222,9 @@ export const App: React.FC = () => {
             <div>
               <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-tight text-white flex items-center gap-1 sm:gap-1.5">
                 Yuki Learning
+                <span className="px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 text-[9px] font-bold uppercase tracking-wider">
+                  v1.0 Beta
+                </span>
                 <span className="px-1.5 py-0.2 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 text-[9px] sm:text-[10px] font-bold">
                   {user.nivel_actual_jlpt}
                 </span>

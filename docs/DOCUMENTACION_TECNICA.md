@@ -222,3 +222,4 @@ Para evitar la dependencia estricta de un servidor backend activo y permitir que
    ```bash
    npm run build
    ```
+
