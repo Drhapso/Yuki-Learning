@@ -238,11 +238,13 @@ export function loadStoredSRSDeck(): SRSFlashcardItem[] {
 
     // Inicializar mazo con fecha de revisión para hoy
     const nowIso = new Date().toISOString();
-    const initialDeck = MOCK_FLASHCARDS.map((card, idx) => ({
+    const initialDeck = MOCK_FLASHCARDS.map((card) => ({
       ...card,
+      nivelMemoriaActual: 1,
       fechaProximaRevision: nowIso,
       totalAciertos: 0,
       totalFallos: 0,
+      ultimaRevision: undefined,
     }));
     saveStoredSRSDeck(initialDeck);
     return initialDeck;
@@ -295,12 +297,21 @@ export function updateCardInSRSDeck(
 }
 
 /**
+ * Determina si una tarjeta ha entrado en la retención activa (ha sido repasada al menos una vez)
+ */
+export function isCardLearned(card: SRSFlashcardItem): boolean {
+  return Boolean(card.ultimaRevision) || (card.totalAciertos || 0) + (card.totalFallos || 0) > 0;
+}
+
+/**
  * Calcula métricas dinámicas reales basadas en las fechas de vencimiento de las tarjetas
  */
 export function calculateSRSMetrics(deck: SRSFlashcardItem[]): {
   summary: SRSDueSummary;
   stages: SRSStageBreakdown;
   dueCards: SRSFlashcardItem[];
+  totalAprendidos: number;
+  totalPorIniciar: number;
 } {
   const now = new Date();
 
@@ -317,14 +328,19 @@ export function calculateSRSMetrics(deck: SRSFlashcardItem[]): {
     gramatica: dueCards.filter((c) => c.tipo === 'gramatica' || c.tipo === 'expresion').length,
   };
 
+  // Solo se contabilizan en las etapas de retención aquellas tarjetas que el usuario realmente ha comenzado a estudiar
+  const learnedCards = deck.filter((c) => isCardLearned(c));
+  const totalAprendidos = learnedCards.length;
+  const totalPorIniciar = deck.length - totalAprendidos;
+
   const stages: SRSStageBreakdown = {
-    aprendiz: deck.filter((c) => c.nivelMemoriaActual <= 3).length,
-    guru: deck.filter((c) => c.nivelMemoriaActual >= 4 && c.nivelMemoriaActual <= 6).length,
-    maestro: deck.filter((c) => c.nivelMemoriaActual === 7 || c.nivelMemoriaActual === 8).length,
-    iluminado: deck.filter((c) => c.nivelMemoriaActual === 9).length,
+    aprendiz: learnedCards.filter((c) => c.nivelMemoriaActual <= 3).length,
+    guru: learnedCards.filter((c) => c.nivelMemoriaActual >= 4 && c.nivelMemoriaActual <= 6).length,
+    maestro: learnedCards.filter((c) => c.nivelMemoriaActual === 7 || c.nivelMemoriaActual === 8).length,
+    iluminado: learnedCards.filter((c) => c.nivelMemoriaActual === 9).length,
   };
 
-  return { summary, stages, dueCards };
+  return { summary, stages, dueCards, totalAprendidos, totalPorIniciar };
 }
 
 // ============================================================================
@@ -364,9 +380,11 @@ export function resetDeviceData(newStartingLevel: JLPTLevel = 'INTRO'): {
   const nowIso = new Date().toISOString();
   const freshDeck = MOCK_FLASHCARDS.map((c) => ({
     ...c,
+    nivelMemoriaActual: 1,
     fechaProximaRevision: nowIso,
     totalAciertos: 0,
     totalFallos: 0,
+    ultimaRevision: undefined,
   }));
 
   saveStoredProfile(freshProfile);

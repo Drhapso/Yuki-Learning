@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Flame,
   Zap,
@@ -17,6 +17,7 @@ import {
   UserCog,
   RotateCcw,
   Smartphone,
+  X,
 } from 'lucide-react';
 import { UserProfile, SRSDueSummary, SRSStageBreakdown, LessonNode, JLPTLevel } from '../types';
 import { formatNumber } from '../lib/format';
@@ -74,10 +75,31 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onResetProfile = () => console.log('Reiniciar perfil'),
   onOpenAuth = (mode) => console.log('Abrir auth', mode),
 }) => {
+  const [showAllReviewedModal, setShowAllReviewedModal] = useState<boolean>(false);
+
   const porcentajeXP = Math.min(
     100,
     Math.round((user.xp_nivel_actual / user.xp_proximo_nivel) * 100)
   );
+
+  const totalAprendidos =
+    (srsStages?.aprendiz || 0) +
+    (srsStages?.guru || 0) +
+    (srsStages?.maestro || 0) +
+    (srsStages?.iluminado || 0);
+
+  const pctAprendiz = totalAprendidos > 0 ? Math.round(((srsStages?.aprendiz || 0) / totalAprendidos) * 100) : 0;
+  const pctGuru = totalAprendidos > 0 ? Math.round(((srsStages?.guru || 0) / totalAprendidos) * 100) : 0;
+  const pctMaestro = totalAprendidos > 0 ? Math.round(((srsStages?.maestro || 0) / totalAprendidos) * 100) : 0;
+  const pctIluminado = totalAprendidos > 0 ? Math.round(((srsStages?.iluminado || 0) / totalAprendidos) * 100) : 0;
+
+  const handleStartReviewClick = () => {
+    if (srsSummary.total === 0) {
+      setShowAllReviewedModal(true);
+    } else {
+      onStartReview();
+    }
+  };
 
   const diasSemana = [
     { inicial: 'L', activo: true },
@@ -189,49 +211,100 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Sistema de Repaso Espaciado (SRS)</span>
+                <span>
+                  {srsSummary.total > 0
+                    ? 'Sistema de Repaso Espaciado (SRS)'
+                    : 'Repaso Diario Completado (SRS)'}
+                </span>
               </div>
 
               <div className="space-y-1">
                 <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-                  Tienes <span className="text-amber-400 underline decoration-amber-500/50 underline-offset-4">{srsSummary.total} tarjetas</span> pendientes hoy
+                  {srsSummary.total > 0 ? (
+                    <>
+                      Tienes{' '}
+                      <span className="text-amber-400 underline decoration-amber-500/50 underline-offset-4">
+                        {srsSummary.total} tarjetas
+                      </span>{' '}
+                      pendientes hoy
+                    </>
+                  ) : (
+                    <span className="text-emerald-400 flex items-center gap-2">
+                      <CheckCircle2 className="w-7 h-7 text-emerald-400 inline" />
+                      ¡Ya viste las tarjetas del día!
+                    </span>
+                  )}
                 </h2>
                 <p className="text-sm text-slate-300 max-w-xl">
-                  Revisa tus tarjetas programadas antes de que venza el ciclo de retención para fijar el vocabulario y los kanjis en tu memoria a largo plazo.
+                  {srsSummary.total > 0
+                    ? 'Revisa tus tarjetas programadas antes de que venza el ciclo de retención para fijar el vocabulario y los kanjis en tu memoria a largo plazo.'
+                    : 'Has completado todas las tarjetas programadas para el ciclo actual. El algoritmo de memoria las reactivará automáticamente a su debido tiempo.'}
                 </p>
               </div>
 
               {/* Píldoras de desglose */}
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-rose-400" />
-                  <strong>{srsSummary.kanji}</strong> Kanji
-                </span>
-                <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                  <strong>{srsSummary.vocabulario}</strong> Vocabulario
-                </span>
-                <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <strong>{srsSummary.gramatica}</strong> Gramática
-                </span>
-                <span className="text-slate-400 flex items-center gap-1 ml-1">
-                  <Clock className="w-3.5 h-3.5" /> ~{Math.ceil(srsSummary.total * 0.25)} min aprox.
-                </span>
+                {srsSummary.total > 0 ? (
+                  <>
+                    <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-rose-400" />
+                      <strong>{srsSummary.kanji}</strong> Kanji
+                    </span>
+                    <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-indigo-400" />
+                      <strong>{srsSummary.vocabulario}</strong> Vocabulario
+                    </span>
+                    <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <strong>{srsSummary.gramatica}</strong> Gramática
+                    </span>
+                    <span className="text-slate-400 flex items-center gap-1 ml-1">
+                      <Clock className="w-3.5 h-3.5" /> ~{Math.ceil(srsSummary.total * 0.25)} min aprox.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 flex items-center gap-1.5 font-medium">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      0 tarjetas pendientes
+                    </span>
+                    <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                      <Brain className="w-3.5 h-3.5 text-rose-400" />
+                      <strong>{totalAprendidos}</strong> en retención activa
+                    </span>
+                    <span className="text-slate-400 flex items-center gap-1 ml-1">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" /> ¡Gran constancia!
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Botón Principal CTA */}
             <div className="lg:col-span-4 flex flex-col justify-center items-start lg:items-end">
               <button
-                onClick={onStartReview}
-                className="w-full lg:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-indigo-600 hover:from-rose-400 hover:to-indigo-500 text-white font-bold text-base md:text-lg shadow-xl shadow-rose-600/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 group"
+                onClick={handleStartReviewClick}
+                className={`w-full lg:w-auto px-8 py-4 rounded-2xl text-white font-bold text-base md:text-lg shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 group ${
+                  srsSummary.total > 0
+                    ? 'bg-gradient-to-r from-rose-500 via-rose-600 to-indigo-600 hover:from-rose-400 hover:to-indigo-500 shadow-rose-600/30'
+                    : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/30'
+                }`}
               >
-                <span>Comenzar Repaso Diario SRS</span>
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span>
+                  {srsSummary.total > 0
+                    ? 'Comenzar Repaso Diario SRS'
+                    : 'Comenzar Repaso Diario'}
+                </span>
+                {srsSummary.total > 0 ? (
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                ) : (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-200" />
+                )}
               </button>
               <p className="text-[11px] text-slate-400 mt-2 text-center lg:text-right w-full">
-                日々の復習を始める · Suma hasta +{srsSummary.total * 10} XP
+                {srsSummary.total > 0
+                  ? `日々の復習を始める · Suma hasta +${srsSummary.total * 10} XP`
+                  : '復習完了 · Repasos del día al 100%'}
               </p>
             </div>
           </div>
@@ -389,7 +462,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <h3 className="font-bold text-white text-sm">Estado de Retención SRS (Curva de Memoria)</h3>
             </div>
             <span className="text-xs text-slate-400">
-              Total aprendidos: <strong className="text-white">{srsStages.aprendiz + srsStages.guru + srsStages.maestro + srsStages.iluminado}</strong>
+              Total aprendidos:{' '}
+              <strong className={totalAprendidos > 0 ? 'text-white' : 'text-slate-400'}>
+                {totalAprendidos}
+              </strong>
             </span>
           </div>
 
@@ -402,7 +478,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div className="text-xl font-black text-rose-200">{srsStages.aprendiz}</div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-rose-500 h-full rounded-full" style={{ width: '45%' }} />
+                <div
+                  className="bg-rose-500 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pctAprendiz}%` }}
+                />
               </div>
             </div>
 
@@ -414,7 +493,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div className="text-xl font-black text-purple-200">{srsStages.guru}</div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-purple-500 h-full rounded-full" style={{ width: '60%' }} />
+                <div
+                  className="bg-purple-500 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pctGuru}%` }}
+                />
               </div>
             </div>
 
@@ -426,7 +508,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div className="text-xl font-black text-blue-200">{srsStages.maestro}</div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-blue-500 h-full rounded-full" style={{ width: '30%' }} />
+                <div
+                  className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pctMaestro}%` }}
+                />
               </div>
             </div>
 
@@ -438,11 +523,85 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div className="text-xl font-black text-amber-200">{srsStages.iluminado}</div>
               <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-amber-400 h-full rounded-full" style={{ width: '80%' }} />
+                <div
+                  className="bg-amber-400 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pctIluminado}%` }}
+                />
               </div>
             </div>
           </div>
         </section>
+
+        {/* ==================================================================== */}
+        {/* VENTANA EMERGENTE: REPASO DIARIO YA VISTO                            */}
+        {/* ==================================================================== */}
+        {showAllReviewedModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+              {/* Botón cerrar */}
+              <button
+                onClick={() => setShowAllReviewedModal(false)}
+                className="absolute top-5 right-5 p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                title="Cerrar ventana"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Icono central de éxito */}
+              <div className="w-16 h-16 mx-auto rounded-3xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+
+              {/* Mensaje principal */}
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+                  <span>✓ Ciclo Diario al Día</span>
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight">
+                  ¡Ya viste las tarjetas del día!
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                  Has completado todas las tarjetas de repaso programadas para hoy. No tienes más repasos pendientes en este ciclo.
+                </p>
+              </div>
+
+              {/* Explicación pedagógica de la curva de retención */}
+              <div className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/50 text-xs space-y-2 text-left">
+                <div className="flex items-center gap-2 text-indigo-400 font-bold">
+                  <Brain className="w-4 h-4" />
+                  <span>¿Cómo funciona tu curva de retención?</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  Para fijar el vocabulario en tu memoria a largo plazo sin saturar tu mente, el algoritmo SRS programa pausas de consolidación. Tus tarjetas volverán a activarse automáticamente según su intervalo (4h, 8h, 24h, etc.).
+                </p>
+                <div className="pt-2 border-t border-slate-700/60 flex justify-between items-center text-[11px]">
+                  <span className="text-slate-400">Total en retención activa:</span>
+                  <span className="font-bold text-white">{totalAprendidos} tarjetas</span>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setShowAllReviewedModal(false);
+                    if (onOpenCurriculum) onOpenCurriculum();
+                  }}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-sm shadow-xl shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>Continuar estudiando lecciones</span>
+                </button>
+                <button
+                  onClick={() => setShowAllReviewedModal(false)}
+                  className="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+                >
+                  Entendido, volver al Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

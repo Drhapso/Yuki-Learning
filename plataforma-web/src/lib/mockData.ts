@@ -278,7 +278,9 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     ejemploEspanol: 'Hay un gato negro en el jardín.',
     nemotecnica: 'El radical izquierdo representa a un animal de cuatro patas que salta ágilmente.',
     nivel: 'N5',
-    nivelMemoriaActual: 1, // Aprendiz
+    nivelMemoriaActual: 1,
+    totalAciertos: 0,
+    totalFallos: 0,
   },
   {
     id: 'srs_02',
@@ -290,7 +292,9 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     ejemploJapones: '毎朝、パンを食べます。',
     ejemploEspanol: 'Como pan todas las mañanas.',
     nivel: 'N5',
-    nivelMemoriaActual: 3, // Aprendiz
+    nivelMemoriaActual: 1,
+    totalAciertos: 0,
+    totalFallos: 0,
   },
   {
     id: 'srs_03',
@@ -303,7 +307,9 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     ejemploEspanol: 'Hoy está lloviendo.',
     nemotecnica: 'Imagina una ventana bajo un cielo nublado con cuatro gotas de agua cayendo.',
     nivel: 'N5',
-    nivelMemoriaActual: 4, // Gurú
+    nivelMemoriaActual: 1,
+    totalAciertos: 0,
+    totalFallos: 0,
   },
   {
     id: 'srs_04',
@@ -315,7 +321,9 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     ejemploJapones: '日本語で話してください。',
     ejemploEspanol: 'Por favor, hable en japonés.',
     nivel: 'N5',
-    nivelMemoriaActual: 5, // Gurú
+    nivelMemoriaActual: 1,
+    totalAciertos: 0,
+    totalFallos: 0,
   },
   {
     id: 'srs_05',
@@ -327,7 +335,9 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     ejemploJapones: '友達と映画を見に行きました。',
     ejemploEspanol: 'Fui a ver una película con un amigo.',
     nivel: 'N5',
-    nivelMemoriaActual: 7, // Maestro
+    nivelMemoriaActual: 1,
+    totalAciertos: 0,
+    totalFallos: 0,
   },
 ];
 

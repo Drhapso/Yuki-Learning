@@ -120,9 +120,11 @@ export async function registerUser({
   const nowIso = new Date().toISOString();
   const initialDeck = MOCK_FLASHCARDS.map((c) => ({
     ...c,
+    nivelMemoriaActual: 1,
     fechaProximaRevision: nowIso,
     totalAciertos: 0,
     totalFallos: 0,
+    ultimaRevision: undefined,
   }));
 
   saveStoredProfile(newProfile);

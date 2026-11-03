@@ -370,7 +370,7 @@ export const App: React.FC = () => {
 
         {currentView === 'review' && (
           <SRSReview
-            items={srsMetrics.dueCards.length > 0 ? srsMetrics.dueCards : srsDeck}
+            items={srsMetrics.dueCards}
             onFinishSession={handleFinishReview}
             onClose={() => setCurrentView('dashboard')}
           />
