@@ -91,8 +91,33 @@ class JapaneseAudioEngine {
   }
 
   /**
+   * Resuelve la URL final del archivo de audio:
+   * - Si está configurada la variable NEXT_PUBLIC_R2_AUDIO_BASE_URL (en Cloudflare Pages),
+   *   redirige automáticamente las peticiones locales /api/audio/... hacia la CDN de Cloudflare R2.
+   * - Si no está configurada, utiliza la ruta relativa del servidor local o la URL absoluta provista.
+   */
+  public resolveAudioUrl(url?: string): string | undefined {
+    if (!url) return undefined;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+
+    const r2Base = process.env.NEXT_PUBLIC_R2_AUDIO_BASE_URL;
+    if (r2Base && url.startsWith('/api/audio/')) {
+      const cleanBase = r2Base.replace(/\/+$/, '');
+      const subpath = url.replace(/^\/api\/audio\//, '');
+      const normalizedSubpath = subpath
+        .replace(/^GRAMATICA\//i, 'gramatica/')
+        .replace(/^ENTRENAMIENTO JLPT\//i, 'entrenamiento-jlpt/')
+        .replace(/^ESCRITURA\//i, 'escritura/')
+        .replace(/^VOCABULARIO\//i, 'vocabulario/');
+      return `${cleanBase}/${normalizedSubpath}`;
+    }
+
+    return url;
+  }
+
+  /**
    * Reproductor Híbrido Inteligente (Opción A):
-   * 1. Si existe audioUrl (archivo MP3 del repositorio o CDN), reproduce el audio nativo original.
+   * 1. Si existe audioUrl (archivo MP3 del repositorio o CDN Cloudflare R2), reproduce el audio nativo original.
    * 2. Si falla la carga del archivo o no se provee audioUrl, hace fallback suave e imperceptible al sintetizador TTS japonés.
    */
   public playAudio({
@@ -108,9 +133,11 @@ class JapaneseAudioEngine {
   }) {
     this.stop();
 
-    if (audioUrl) {
+    const resolvedUrl = this.resolveAudioUrl(audioUrl);
+
+    if (resolvedUrl) {
       try {
-        const audio = new Audio(audioUrl);
+        const audio = new Audio(resolvedUrl);
         this.currentAudioElement = audio;
 
         audio.onended = () => {
@@ -119,13 +146,13 @@ class JapaneseAudioEngine {
         };
 
         audio.onerror = (e) => {
-          console.warn(`No se pudo cargar el archivo MP3 (${audioUrl}), usando fallback TTS:`, e);
+          console.warn(`No se pudo cargar el archivo MP3 (${resolvedUrl}), usando fallback TTS:`, e);
           this.currentAudioElement = null;
           this.speak(text, onEnd, onError);
         };
 
         audio.play().catch((err) => {
-          console.warn(`Reproducción de MP3 bloqueada o interrumpida (${audioUrl}), fallback a TTS:`, err);
+          console.warn(`Reproducción de MP3 bloqueada o interrumpida (${resolvedUrl}), fallback a TTS:`, err);
           this.speak(text, onEnd, onError);
         });
         return;
