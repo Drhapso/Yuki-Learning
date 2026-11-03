@@ -36,7 +36,7 @@ import { formatNumber } from '../lib/format';
 const DEFAULT_GUEST_USER: UserProfile = {
   id: 'usr_device_guest',
   nombre: 'Estudiante',
-  email: 'estudiante@nihongo.local',
+  email: 'estudiante@yukilearning.local',
   avatar_icon: '🦊',
   xp_total: 0,
   racha_actual: 1,
@@ -168,7 +168,7 @@ export const App: React.FC = () => {
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center font-black text-white text-lg animate-pulse shadow-lg shadow-rose-500/20">
             日
           </div>
-          <span className="text-xs text-slate-400 font-medium">Iniciando NihongoPlatform...</span>
+          <span className="text-xs text-slate-400 font-medium">Iniciando Yuki Learning...</span>
         </div>
       </div>
     );
@@ -189,11 +189,11 @@ export const App: React.FC = () => {
             className="flex items-center gap-2.5 cursor-pointer group"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center font-black text-white text-base shadow-lg shadow-rose-500/20 group-hover:scale-105 transition-transform">
-              日
+              雪
             </div>
             <div>
               <span className="font-extrabold text-sm md:text-base tracking-tight text-white flex items-center gap-1.5">
-                NihongoPlatform
+                Yuki Learning
                 <span className="px-1.5 py-0.2 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 text-[10px] font-bold">
                   {user.nivel_actual_jlpt}
                 </span>

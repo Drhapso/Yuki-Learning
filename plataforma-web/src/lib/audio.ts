@@ -1,5 +1,5 @@
 /**
- * AUDIO ENGINE PARA NIHONGO PLATFORM
+ * AUDIO ENGINE PARA YUKI LEARNING
  * 
  * Resuelve todos los fallos comunes de audio en el navegador:
  * 1. Limpieza de caracteres no fonéticos (tilde '〜', corchetes de huecos '[ ? ]', romaji entre paréntesis).

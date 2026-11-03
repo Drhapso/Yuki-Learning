@@ -69,7 +69,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
     const nuevoPerfil: UserProfile = {
       id: initialProfile?.id || `usr_${Date.now()}`,
       nombre: nombre.trim(),
-      email: initialProfile?.email || `${nombre.toLowerCase().replace(/\s+/g, '')}@nihongo.local`,
+      email: initialProfile?.email || `${nombre.toLowerCase().replace(/\s+/g, '')}@yukilearning.local`,
       avatar_icon: avatar,
       avatar_url: avatarUrl,
       xp_total: initialProfile?.xp_total ?? 0,
@@ -123,7 +123,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
 
           <div>
             <h2 className="text-2xl font-black text-white tracking-tight">
-              {initialProfile ? 'Actualizar Mi Perfil' : '¡Bienvenido a NihongoPlatform!'}
+              {initialProfile ? 'Actualizar Mi Perfil' : '¡Bienvenido a Yuki Learning!'}
             </h2>
             <p className="text-xs md:text-sm text-slate-400">
               {initialProfile

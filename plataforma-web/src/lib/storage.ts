@@ -12,9 +12,12 @@ import { calculateNextReview, getEtapaSRS } from './srs';
 import { MOCK_CURRICULUM, MOCK_FLASHCARDS } from './mockData';
 
 const KEYS = {
-  PROFILE: 'nihongo_user_profile_v1',
-  CURRICULUM: 'nihongo_curriculum_v1',
-  SRS_DECK: 'nihongo_srs_deck_v1',
+  PROFILE: 'yuki_user_profile_v1',
+  CURRICULUM: 'yuki_curriculum_v1',
+  SRS_DECK: 'yuki_srs_deck_v1',
+  LEGACY_PROFILE: 'nihongo_user_profile_v1',
+  LEGACY_CURRICULUM: 'nihongo_curriculum_v1',
+  LEGACY_SRS_DECK: 'nihongo_srs_deck_v1',
 };
 
 // ============================================================================
@@ -24,7 +27,7 @@ const KEYS = {
 export function loadStoredProfile(): UserProfile | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(KEYS.PROFILE);
+    const raw = localStorage.getItem(KEYS.PROFILE) || localStorage.getItem(KEYS.LEGACY_PROFILE);
     return raw ? JSON.parse(raw) : null;
   } catch (e) {
     console.error('Error al cargar perfil:', e);
@@ -107,7 +110,7 @@ export function getInitialCurriculum(startingLevel: JLPTLevel = 'INTRO'): Curric
 export function loadStoredCurriculum(startingLevel?: JLPTLevel): CurriculumLevel[] {
   if (typeof window === 'undefined') return MOCK_CURRICULUM;
   try {
-    const raw = localStorage.getItem(KEYS.CURRICULUM);
+    const raw = localStorage.getItem(KEYS.CURRICULUM) || localStorage.getItem(KEYS.LEGACY_CURRICULUM);
     if (raw) return JSON.parse(raw);
     const initial = getInitialCurriculum(startingLevel || 'INTRO');
     saveStoredCurriculum(initial);
@@ -218,7 +221,7 @@ export function getRecommendedLesson(
 export function loadStoredSRSDeck(): SRSFlashcardItem[] {
   if (typeof window === 'undefined') return MOCK_FLASHCARDS;
   try {
-    const raw = localStorage.getItem(KEYS.SRS_DECK);
+    const raw = localStorage.getItem(KEYS.SRS_DECK) || localStorage.getItem(KEYS.LEGACY_SRS_DECK);
     if (raw) return JSON.parse(raw);
 
     // Inicializar mazo con fecha de revisión para hoy
@@ -325,12 +328,15 @@ export function resetDeviceData(newStartingLevel: JLPTLevel = 'INTRO'): {
     localStorage.removeItem(KEYS.PROFILE);
     localStorage.removeItem(KEYS.CURRICULUM);
     localStorage.removeItem(KEYS.SRS_DECK);
+    localStorage.removeItem(KEYS.LEGACY_PROFILE);
+    localStorage.removeItem(KEYS.LEGACY_CURRICULUM);
+    localStorage.removeItem(KEYS.LEGACY_SRS_DECK);
   }
 
   const freshProfile: UserProfile = {
     id: `usr_${Date.now()}`,
     nombre: 'Estudiante',
-    email: 'estudiante@nihongo.local',
+    email: 'estudiante@yukilearning.local',
     avatar_icon: '🦊',
     xp_total: 0,
     racha_actual: 1,
@@ -357,3 +363,4 @@ export function resetDeviceData(newStartingLevel: JLPTLevel = 'INTRO'): {
 
   return { freshProfile, freshCurriculum, freshDeck };
 }
+
