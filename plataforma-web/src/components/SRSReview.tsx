@@ -50,16 +50,35 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
   const currentItem = deck[currentIdx];
   const progressPercent = totalDeck > 0 ? Math.round((currentIdx / totalDeck) * 100) : 100;
 
-  // Reproducción de audio nativo híbrido (MP3 original + fallback TTS)
-  const playAudio = (text: string, audioUrl?: string) => {
+  // Reproducción de audio generada 100% desde la app para la tarjeta que se está estudiando (TTS nativo)
+  const playCardAudio = () => {
+    if (!currentItem) return;
     setIsPlayingAudio(true);
-    soundManager.playAudio({
-      text,
-      audioUrl,
-      onEnd: () => setIsPlayingAudio(false),
-      onError: () => setIsPlayingAudio(false),
-    });
+    soundManager.stop();
+    soundManager.speakCard(
+      currentItem,
+      () => setIsPlayingAudio(false),
+      () => setIsPlayingAudio(false)
+    );
   };
+
+  // Reproducción de la oración de ejemplo japonesa de la tarjeta
+  const playExampleAudio = (ejemplo: string) => {
+    setIsPlayingAudio(true);
+    soundManager.stop();
+    soundManager.speak(
+      ejemplo,
+      () => setIsPlayingAudio(false),
+      () => setIsPlayingAudio(false)
+    );
+  };
+
+  // Detener audio al salir del componente
+  useEffect(() => {
+    return () => {
+      soundManager.stop();
+    };
+  }, []);
 
   const handleFlip = () => {
     if (!isFlipped) {
@@ -94,6 +113,9 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
   // Manejo de la calificación SRS con feedback sonoro y persistencia inmediata
   const handleRate = (rating: SRSRating) => {
     if (!currentItem) return;
+
+    soundManager.stop();
+    setIsPlayingAudio(false);
 
     if (rating === 'facil' || rating === 'bien') {
       soundManager.playCorrectSound();
@@ -269,16 +291,17 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
                 {etapaActual} (Nv. {currentItem.nivelMemoriaActual})
               </span>
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  playAudio(currentItem.lectura || currentItem.caracter, currentItem.audioUrl);
+                  playCardAudio();
                 }}
                 className={`p-2 rounded-xl border transition-all ${
                   isPlayingAudio
                     ? 'bg-rose-500/20 border-rose-500 text-rose-400 scale-110 shadow-md shadow-rose-500/20'
                     : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
                 }`}
-                title="Escuchar pronunciación nativa"
+                title="Escuchar pronunciación de la tarjeta (generada por la app)"
               >
                 <Volume2 className={`w-4 h-4 ${isPlayingAudio ? 'animate-pulse' : ''}`} />
               </button>
@@ -290,9 +313,22 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
             <h1 className="text-5xl md:text-7xl font-black text-white tracking-wide">
               {currentItem.caracter}
             </h1>
-            <p className="text-base md:text-lg text-rose-400 font-bold">
-              {currentItem.lectura}
-            </p>
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-base md:text-lg text-rose-400 font-bold">
+                {currentItem.lectura}
+              </p>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playCardAudio();
+                }}
+                className="p-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-all hover:scale-110 active:scale-95"
+                title="Escuchar audio de la tarjeta"
+              >
+                <Volume2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
             {currentItem.romaji && (
               <p className="text-xs text-slate-400 font-mono italic">
                 {currentItem.romaji}
@@ -313,9 +349,22 @@ export const SRSReview: React.FC<SRSReviewProps> = ({
               </div>
 
               {currentItem.ejemploJapones && (
-                <div className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/40 text-xs space-y-0.5">
-                  <div className="text-slate-200 font-medium">
-                    {currentItem.ejemploJapones}
+                <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/40 text-xs space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-slate-200 font-medium leading-relaxed">
+                      {currentItem.ejemploJapones}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playExampleAudio(currentItem.ejemploJapones!);
+                      }}
+                      className="p-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-600 text-slate-300 hover:text-white transition-colors flex-shrink-0"
+                      title="Escuchar oración de ejemplo (generada por la app)"
+                    >
+                      <Volume2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                   <div className="text-slate-400 text-[11px]">
                     {currentItem.ejemploEspanol}

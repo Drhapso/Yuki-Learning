@@ -277,7 +277,6 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     ejemploJapones: '黒い猫が庭にいます。',
     ejemploEspanol: 'Hay un gato negro en el jardín.',
     nemotecnica: 'El radical izquierdo representa a un animal de cuatro patas que salta ágilmente.',
-    audioUrl: '/api/audio/GRAMATICA/IRODORI/A1/Tema%201/Audio/X_[01-01]_kiku.mp3',
     nivel: 'N5',
     nivelMemoriaActual: 1, // Aprendiz
   },
@@ -315,7 +314,6 @@ export const MOCK_FLASHCARDS: SRSFlashcardItem[] = [
     significado: 'Por favor, haz (petición cortés)',
     ejemploJapones: '日本語で話してください。',
     ejemploEspanol: 'Por favor, hable en japonés.',
-    audioUrl: '/api/audio/GRAMATICA/IRODORI/A1/Tema%201/Audio/X_[01-07]_hanasu1-2.mp3',
     nivel: 'N5',
     nivelMemoriaActual: 5, // Gurú
   },

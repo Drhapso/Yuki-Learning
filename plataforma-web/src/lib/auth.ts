@@ -249,7 +249,11 @@ export function importProgressSyncPayload(
     // Persistir todos los datos restaurados
     saveStoredProfile(payload.user);
     saveStoredCurriculum(payload.curriculum);
-    saveStoredSRSDeck(payload.srsDeck);
+    const sanitizedDeck = payload.srsDeck.map((card) => {
+      const { audioUrl, ...rest } = card;
+      return rest;
+    });
+    saveStoredSRSDeck(sanitizedDeck);
 
     // Registrar la cuenta en este dispositivo si no existía
     const accounts = getStoredAccounts();

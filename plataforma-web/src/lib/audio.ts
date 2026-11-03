@@ -14,6 +14,7 @@ class JapaneseAudioEngine {
   private japaneseVoice: SpeechSynthesisVoice | null = null;
   private audioContext: AudioContext | null = null;
   private currentAudioElement: HTMLAudioElement | null = null;
+  private currentUtterance: SpeechSynthesisUtterance | null = null;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -72,7 +73,9 @@ class JapaneseAudioEngine {
    * Limpia el texto en japonés para pronunciación natural:
    * - Elimina ondas/tildes japonesas: '〜' o '~'
    * - Elimina Romaji explicativo entre paréntesis: '(taberu)', '(neko)'
+   * - Elimina anotaciones con barra tipo '/ neko'
    * - Reemplaza huecos de ejercicio '[ ? ]' por pausas suaves
+   * - Elimina puntos de okurigana '・' y guiones residuales
    */
   public cleanJapaneseText(text: string): string {
     if (!text) return '';
@@ -83,11 +86,45 @@ class JapaneseAudioEngine {
       // Eliminar romaji y notas entre paréntesis ej. (neko), (tabemasu)
       .replace(/\([a-zA-Z0-9\s\-–—/]+\)/g, '')
       .replace(/（[a-zA-Z0-9\s\-–—/]+）/g, '')
+      // Eliminar anotaciones con barra tipo "/ neko" o "/ taberu"
+      .replace(/\/[a-zA-Z0-9\s\-–—]+/g, '')
       // Reemplazar espacios de preguntas de opción múltiple [ ? ] por una coma o pausa breve
       .replace(/\[\s*\?\s*\]/g, '、')
-      // Limpiar caracteres residuales
-      .replace(/\[|\]/g, '')
+      // Eliminar puntos de separación silábica de okurigana (ej. い・きる)
+      .replace(/[・•]/g, '')
+      // Limpiar corchetes residuales
+      .replace(/[\[\]]/g, '')
+      // Eliminar guiones iniciales o finales que a veces quedan de afijos ej. "-te" o "te-"
+      .replace(/^[\-–—\s]+|[\-–—\s]+$/g, '')
       .trim();
+  }
+
+  /**
+   * Extrae el texto fonético óptimo para pronunciar una tarjeta SRS:
+   * Prioriza la lectura limpia en kana (garantizando la pronunciación exacta de la tarjeta),
+   * o el carácter en kanji/japonés si no hay lectura definida.
+   */
+  public getCardSpeechText(card: { caracter: string; lectura?: string }): string {
+    if (card.lectura) {
+      const cleanKana = this.cleanJapaneseText(card.lectura);
+      if (cleanKana && cleanKana.length > 0) {
+        return cleanKana;
+      }
+    }
+    return this.cleanJapaneseText(card.caracter);
+  }
+
+  /**
+   * Sintetiza la pronunciación exacta de una tarjeta de repaso SRS usando el motor interno de la app (TTS)
+   * garantizando que el sonido generado corresponda al carácter y lectura que se está estudiando.
+   */
+  public speakCard(
+    card: { caracter: string; lectura?: string },
+    onEnd?: () => void,
+    onError?: (err: any) => void
+  ): boolean {
+    const speechText = this.getCardSpeechText(card);
+    return this.speak(speechText, onEnd, onError);
   }
 
   /**
@@ -165,7 +202,7 @@ class JapaneseAudioEngine {
   }
 
   /**
-   * Reproduce la pronunciación nativa de una palabra u oración en japonés mediante TTS
+   * Reproduce la pronunciación nativa de una palabra u oración en japonés mediante el sintetizador interno de la app
    */
   public speak(text: string, onEnd?: () => void, onError?: (err: any) => void): boolean {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -177,8 +214,15 @@ class JapaneseAudioEngine {
     if (!cleanText) return false;
 
     try {
-      // 1. Descongestionar la cola de speechSynthesis previa (soluciona el bug de Chrome/Edge)
-      window.speechSynthesis.cancel();
+      // 1. Reanudar si estaba pausado (evita congelamiento en móviles/Chrome)
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+
+      // 2. Descongestionar cola si ya estaba hablando
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+        window.speechSynthesis.cancel();
+      }
 
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = 'ja-JP';
@@ -186,7 +230,7 @@ class JapaneseAudioEngine {
       utterance.pitch = 1.0;
 
       // Asegurar que las voces estén cargadas
-      if (!this.japaneseVoice) {
+      if (!this.japaneseVoice || this.voices.length === 0) {
         this.initVoices();
       }
 
@@ -194,13 +238,25 @@ class JapaneseAudioEngine {
         utterance.voice = this.japaneseVoice;
       }
 
-      if (onEnd) utterance.onend = onEnd;
-      if (onError) utterance.onerror = onError;
+      // Prevenir recolección de basura prematura en Chromium guardando la referencia activa
+      this.currentUtterance = utterance;
+
+      utterance.onend = () => {
+        this.currentUtterance = null;
+        if (onEnd) onEnd();
+      };
+
+      utterance.onerror = (err) => {
+        this.currentUtterance = null;
+        console.warn('SpeechSynthesis error:', err);
+        if (onError) onError(err);
+      };
 
       window.speechSynthesis.speak(utterance);
       return true;
     } catch (err) {
       console.error('Error al reproducir audio japonés:', err);
+      this.currentUtterance = null;
       if (onError) onError(err);
       return false;
     }
@@ -217,6 +273,7 @@ class JapaneseAudioEngine {
     }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+      this.currentUtterance = null;
     }
   }
 

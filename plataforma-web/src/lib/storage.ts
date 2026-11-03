@@ -222,7 +222,19 @@ export function loadStoredSRSDeck(): SRSFlashcardItem[] {
   if (typeof window === 'undefined') return MOCK_FLASHCARDS;
   try {
     const raw = localStorage.getItem(KEYS.SRS_DECK) || localStorage.getItem(KEYS.LEGACY_SRS_DECK);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed: SRSFlashcardItem[] = JSON.parse(raw);
+      // Sanitizar tarjetas de repaso: el audio SRS se genera directamente en la app
+      // y no debe reproducir audios residuales externos de R2
+      const sanitized = parsed.map((card) => {
+        if (card.audioUrl) {
+          const { audioUrl, ...rest } = card;
+          return rest;
+        }
+        return card;
+      });
+      return sanitized;
+    }
 
     // Inicializar mazo con fecha de revisión para hoy
     const nowIso = new Date().toISOString();

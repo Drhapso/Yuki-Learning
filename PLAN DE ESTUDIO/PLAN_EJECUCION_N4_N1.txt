@@ -119,3 +119,4 @@ ETAPA 5 (Versión 2.0: Perfeccionamiento y Contenido Avanzado N2 / N1)
 [ ] Paso 4: Validar en mobile y desktop la navegación fluida entre niveles N5 y N4.
 [ ] Paso 5: Probar compilación estática ('npm run build') y verificar despliegue en Cloudflare Pages.
 =============================================================================
+
