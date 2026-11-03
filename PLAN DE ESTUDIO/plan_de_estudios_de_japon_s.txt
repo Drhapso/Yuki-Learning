@@ -1,0 +1,121 @@
+PLAN DE ESTUDIOS DE JAPONÉS PARA PLATAFORMA WEB
+De Cero a Avanzado (Basado en el sistema JLPT: N5 a N1)
+
+=============================================================================
+SECCIÓN A: METODOLOGÍA Y RETENCIÓN EN LA PLATAFORMA
+=============================================================================
+
+1. ESTRATEGIAS DE GAMIFICACIÓN
+Para mantener la motivación a lo largo de un proceso de aprendizaje extenso, la plataforma contará con:
+- Puntos de Experiencia (XP) y Niveles de Usuario: Otorgados por cada lección completada, revisión de vocabulario o participación en foros.
+- Sistema de Rachas (Streaks): Fomentar el estudio diario recompensando al usuario por días consecutivos de inicio de sesión y práctica.
+- Medallas y Logros: Desbloqueables al alcanzar hitos (ej. "Maestro del Hiragana", "Primeros 100 Kanjis", "Sobreviviente de Tokio").
+- Avatares Personalizables: Ítems visuales (ropa tradicional, mascotas yokai, fondos japoneses) que se compran con la moneda virtual ganada en la plataforma.
+- Tablas de Clasificación (Ligas): Sistema competitivo opcional semanal emparejando usuarios del mismo nivel.
+
+2. SISTEMA DE REPASO ESPACIADO (SRS) PARA KANJI Y VOCABULARIO
+El núcleo técnico para la retención a largo plazo.
+- Algoritmo de Repaso: Intervalos dinámicos basados en aciertos/errores (ej. repaso a las 4 horas, 1 día, 3 días, 1 semana, 1 mes). Si se falla, el intervalo se reinicia.
+- Tarjetas de Doble Cara (Flashcards):
+  * Cara A: Kanji en contexto (dentro de una oración) o lectura.
+  * Cara B: Significado, lectura On/Kun y audio.
+- Mnemotecnia Visual: Descomposición de Kanjis por radicales, mostrando historias visuales para facilitar su memorización.
+- Modo de Entrada Estricta (Hard Mode): Exigir al usuario que escriba la lectura en Hiragana/Romaji usando el teclado, en lugar de opción múltiple, para garantizar la retención real.
+
+=============================================================================
+SECCIÓN B: PLAN DE ESTUDIOS DETALLADO
+=============================================================================
+
+MÓDULO 0: FUNDAMENTOS (Pre-N5)
+Objetivo: Entender la estructura básica del idioma y dominar los silabarios.
+
+Lección 0.1: Introducción al idioma (Romaji, estructura SOV, pronunciación).
+Lección 0.2: Hiragana. Lectura, escritura, trazos y reglas.
+Lección 0.3: Katakana. Lectura, escritura y uso.
+Lección 0.4: Saludos básicos y presentaciones.
+Lección 0.5: Los números del 1 al 100 y la edad.
+*Hito:* Desbloqueo de teclado japonés y cuestionario de lectura rápida.
+
+=============================================================================
+MÓDULO 1: NIVEL BÁSICO (Equivalente a JLPT N5) - *DETALLADO*
+Objetivo: Supervivencia básica. Comprensión de oraciones simples y rutinas.
+Meta: ~100 Kanji, ~800 palabras.
+
+Unidad 1.1: Esto, eso, aquello (Kore, Sore, Are) y el verbo "Ser" (Desu).
+- Ejercicio en plataforma: "Arrastrar y soltar" (Drag & Drop). El usuario ve una imagen y debe arrastrar el pronombre correcto dependiendo de la distancia del objeto al hablante.
+
+Unidad 1.2: Partículas fundamentales: は (wa), が (ga), を (wo), に (ni), で (de).
+- Ejercicio en plataforma: "Fill in the blank" interactivo. Oraciones con huecos donde el usuario debe teclear la partícula correcta que une el sujeto y la acción.
+
+Unidad 1.3: Verbos regulares (Forma -Masu). Presente, pasado, afirmativo y negativo.
+- Ejercicio en plataforma: "Máquina de conjugación". Se da un verbo en su forma base (diccionario) y un tiempo (ej. Pasado Negativo) y el usuario debe formar la palabra correcta (ej. Tabemasendeshita).
+
+Unidad 1.4: La existencia (Arimasu / Imasu) y ubicaciones (arriba, abajo, cerca).
+Unidad 1.5: Días de la semana, meses, horas y fechas.
+- Ejercicio en plataforma: "Listen and match". Escuchar un audio nativo diciendo una hora o fecha específica y hacer clic en el calendario/reloj digital correcto.
+
+Unidad 1.6: Adjetivos tipo -i y tipo -na. Conjugaciones básicas.
+Unidad 1.7: Contadores básicos (personas, objetos planos, objetos cilíndricos, etc.).
+Unidad 1.8: Introducción a los primeros 50 Kanji.
+- Ejercicio en plataforma: Introducción directa al sistema SRS de la plataforma. Identificar la lectura correcta de un Kanji insertado en una oración ya aprendida.
+
+Unidad 1.9: La forma -Te de los verbos (Parte 1: Peticiones y progreso).
+*Proyecto práctico de la plataforma:* "Mi Primer Diario". El usuario escribe 5 oraciones sobre su día usando la forma -Masu. Un sistema de IA o moderadores comunitarios corrigen los textos.
+
+=============================================================================
+MÓDULO 2: BÁSICO SUPERIOR (Equivalente a JLPT N4)
+Objetivo: Comunicación diaria. Expresar intenciones y comparar.
+Meta: ~300 Kanji (acumulado), ~1,500 palabras.
+
+Unidad 2.1: El estilo informal / diccionario de los verbos y adjetivos.
+Unidad 2.2: Forma -Nai y obligaciones (Nakereba narimasen).
+Unidad 2.3: Forma -Ta y experiencias (Koto ga arimasu).
+Unidad 2.4: Comparaciones y superlativos (Yori, Ichiban).
+Unidad 2.5: Dar y recibir (Ageru, Morau, Kureru).
+Unidad 2.6: Potencial y Volitivo.
+Unidad 2.7: Condicionales (To, Ba, Tara, Nara).
+Unidad 2.8: Verbos transitivos e intransitivos.
+Unidad 2.9: 200 Kanji adicionales.
+*Proyecto práctico:* Grabar un audio dando instrucciones de direcciones.
+
+=============================================================================
+MÓDULO 3: INTERMEDIO (Equivalente a JLPT N3)
+Objetivo: Conversación fluida, lectura de textos de interés general.
+Meta: ~650 Kanji (acumulado), ~3,700 palabras.
+
+Unidad 3.1: Pasiva, Causativa y Causativa-Pasiva.
+Unidad 3.2: Expresar apariencia y expectativa (Sou, Rashii, Mitai).
+Unidad 3.3: Expresiones de esfuerzo y decisión.
+Unidad 3.4: Conectores y conjunciones intermedias.
+Unidad 3.5: Modificación de sustantivos con frases largas.
+Unidad 3.6: Lenguaje Honorífico y Humilde básico (Keigo).
+Unidad 3.7: Lectura de artículos cortos y blogs.
+Unidad 3.8: 350 Kanji adicionales.
+*Proyecto práctico:* Redactar una carta formal solicitando información.
+
+=============================================================================
+MÓDULO 4: AVANZADO I (Equivalente a JLPT N2)
+Objetivo: Comprensión en situaciones amplias, periódicos y TV.
+Meta: ~1,000 Kanji (acumulado), ~6,000 palabras.
+
+Unidad 4.1: Gramática de nivel avanzado y partículas dobles.
+Unidad 4.2: Keigo avanzado (Business Japanese).
+Unidad 4.3: Expresiones de causa, condición y tiempo avanzadas.
+Unidad 4.4: Terminología especializada.
+Unidad 4.5: Lectura rápida y escaneo de información en textos largos.
+Unidad 4.6: Comprensión auditiva a velocidad natural sin adaptar.
+Unidad 4.7: 350 Kanji adicionales (Jukugo complejos).
+*Proyecto práctico:* Simulación de entrevista de trabajo.
+
+=============================================================================
+MÓDULO 5: AVANZADO II / MAESTRÍA (Equivalente a JLPT N1)
+Objetivo: Dominio casi nativo, textos abstractos y especializados.
+Meta: ~2,000+ Kanji, ~10,000+ palabras.
+
+Unidad 5.1: Gramática arcaica y literaria formal.
+Unidad 5.2: Lectura de literatura japonesa y editoriales.
+Unidad 5.3: Vocabulario de áreas especializadas (Derecho, ciencias).
+Unidad 5.4: Nuances y sutiles diferencias emocionales.
+Unidad 5.5: Dominio de los Joyo Kanji completos (2,136 caracteres).
+Unidad 5.6: Expresiones idiomáticas (Yojijukugo) y proverbios (Kotowaza).
+*Proyecto práctico:* Ensayo crítico y debate simulado en audio.

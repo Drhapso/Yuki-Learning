@@ -1,0 +1,409 @@
+'use client';
+
+import React from 'react';
+import {
+  Flame,
+  Zap,
+  BookOpen,
+  Target,
+  Trophy,
+  ChevronRight,
+  Clock,
+  Sparkles,
+  Layers,
+  ArrowUpRight,
+  Brain,
+  CheckCircle2,
+  UserCog,
+  RotateCcw,
+} from 'lucide-react';
+import { UserProfile, SRSDueSummary, SRSStageBreakdown } from '../types';
+import { formatNumber } from '../lib/format';
+
+interface DashboardProps {
+  user?: UserProfile;
+  srsSummary?: SRSDueSummary;
+  srsStages?: SRSStageBreakdown;
+  onStartReview?: () => void;
+  onOpenCurriculum?: () => void;
+  onContinueLesson?: () => void;
+  onEditProfile?: () => void;
+  onResetProfile?: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({
+  user = {
+    id: 'user-default-1',
+    nombre: 'Carlos',
+    email: 'carlos@ejemplo.com',
+    xp_total: 1850,
+    racha_actual: 7,
+    racha_maxima: 14,
+    meta_diaria: 25,
+    nivel_actual_jlpt: 'N5',
+    nivel_usuario: 5,
+    xp_nivel_actual: 350,
+    xp_proximo_nivel: 500,
+  },
+  srsSummary = {
+    total: 38,
+    kanji: 14,
+    vocabulario: 18,
+    gramatica: 6,
+  },
+  srsStages = {
+    aprendiz: 124,
+    guru: 68,
+    maestro: 32,
+    iluminado: 15,
+  },
+  onStartReview = () => console.log('Iniciando sesión SRS...'),
+  onOpenCurriculum = () => console.log('Abriendo mapa de estudios...'),
+  onContinueLesson = () => console.log('Continuando lección activa...'),
+  onEditProfile = () => console.log('Editar perfil'),
+  onResetProfile = () => console.log('Reiniciar perfil'),
+}) => {
+  const porcentajeXP = Math.min(
+    100,
+    Math.round((user.xp_nivel_actual / user.xp_proximo_nivel) * 100)
+  );
+
+  const diasSemana = [
+    { inicial: 'L', activo: true },
+    { inicial: 'M', activo: true },
+    { inicial: 'M', activo: true },
+    { inicial: 'J', activo: true },
+    { inicial: 'V', activo: true },
+    { inicial: 'S', activo: true },
+    { inicial: 'D', activo: true }, // Racha activa perfecta de 7 días
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 font-sans">
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        {/* ==================================================================== */}
+        {/* TOPBAR: PERFIL, RACHA Y XP RESUMEN                                   */}
+        {/* ==================================================================== */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center font-bold text-2xl text-white shadow-lg shadow-rose-500/20 ring-2 ring-slate-800">
+                {user.avatar_icon || user.nombre.charAt(0)}
+              </div>
+              <span className="absolute -bottom-1 -right-1 bg-amber-400 text-slate-950 font-black text-[10px] px-1.5 py-0.5 rounded-full uppercase border border-slate-900">
+                {user.nivel_actual_jlpt}
+              </span>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white">
+                  おかえり, {user.nombre}! 👋
+                </h1>
+                <button
+                  onClick={onEditProfile}
+                  className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                  title="Editar mi perfil"
+                >
+                  <UserCog className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs md:text-sm text-slate-400">
+                  Nivel {user.nivel_usuario} · <span className="text-rose-400 font-medium">{user.nivel_actual_jlpt === 'INTRO' ? '初学者 (Principiante)' : '学徒 (Estudiante ' + user.nivel_actual_jlpt + ')'}</span>
+                </p>
+                <span className="text-slate-600">·</span>
+                <button
+                  onClick={onResetProfile}
+                  className="text-[11px] text-slate-500 hover:text-rose-400 font-medium transition-colors flex items-center gap-1"
+                  title="Reiniciar configuración para crear un nuevo perfil"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Nuevo Perfil</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Badges: Racha y Total XP */}
+          <div className="flex items-center gap-3">
+            {/* Racha con fuego */}
+            <div className="flex items-center gap-2.5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 px-4 py-2 rounded-xl text-amber-400">
+              <Flame className="w-6 h-6 fill-amber-500 text-orange-500 animate-pulse" />
+              <div>
+                <div className="text-lg font-black leading-none">{user.racha_actual}</div>
+                <div className="text-[10px] uppercase font-bold tracking-wider text-amber-500/80">
+                  Días de Racha
+                </div>
+              </div>
+            </div>
+
+            {/* XP Total */}
+            <div className="flex items-center gap-2.5 bg-indigo-500/10 border border-indigo-500/30 px-4 py-2 rounded-xl text-indigo-400">
+              <Zap className="w-6 h-6 fill-indigo-400 text-indigo-400" />
+              <div>
+                <div className="text-lg font-black leading-none">{formatNumber(user.xp_total)}</div>
+                <div className="text-[10px] uppercase font-bold tracking-wider text-indigo-400/80">
+                  XP Total
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* ==================================================================== */}
+        {/* HERO CALL TO ACTION: REPASO DIARIO SRS                               */}
+        {/* ==================================================================== */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900/90 via-slate-900 to-rose-950/80 border border-indigo-500/30 p-6 md:p-8 shadow-2xl">
+          {/* Kanji de fondo decorativo japonés */}
+          <div className="absolute right-4 -bottom-6 text-[110px] md:text-[140px] font-black text-white/[0.03] select-none pointer-events-none">
+            記憶
+          </div>
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <div className="lg:col-span-8 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Sistema de Repaso Espaciado (SRS)</span>
+              </div>
+
+              <div className="space-y-1">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                  Tienes <span className="text-amber-400 underline decoration-amber-500/50 underline-offset-4">{srsSummary.total} tarjetas</span> pendientes hoy
+                </h2>
+                <p className="text-sm text-slate-300 max-w-xl">
+                  Revisa tus tarjetas programadas antes de que venza el ciclo de retención para fijar el vocabulario y los kanjis en tu memoria a largo plazo.
+                </p>
+              </div>
+
+              {/* Píldoras de desglose */}
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-rose-400" />
+                  <strong>{srsSummary.kanji}</strong> Kanji
+                </span>
+                <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-indigo-400" />
+                  <strong>{srsSummary.vocabulario}</strong> Vocabulario
+                </span>
+                <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <strong>{srsSummary.gramatica}</strong> Gramática
+                </span>
+                <span className="text-slate-400 flex items-center gap-1 ml-1">
+                  <Clock className="w-3.5 h-3.5" /> ~{Math.ceil(srsSummary.total * 0.25)} min aprox.
+                </span>
+              </div>
+            </div>
+
+            {/* Botón Principal CTA */}
+            <div className="lg:col-span-4 flex flex-col justify-center items-start lg:items-end">
+              <button
+                onClick={onStartReview}
+                className="w-full lg:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-indigo-600 hover:from-rose-400 hover:to-indigo-500 text-white font-bold text-base md:text-lg shadow-xl shadow-rose-600/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 group"
+              >
+                <span>Comenzar Repaso Diario SRS</span>
+                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <p className="text-[11px] text-slate-400 mt-2 text-center lg:text-right w-full">
+                日々の復習を始める · Suma hasta +{srsSummary.total * 10} XP
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ==================================================================== */}
+        {/* GRID PRINCIPAL: PROGRESO XP, RACHA SEMANAL Y ÁRBOL DE ESTUDIOS       */}
+        {/* ==================================================================== */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* 1. BARRA DE EXPERIENCIA (XP) Y NIVEL */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-400" />
+                <h3 className="font-bold text-white text-sm">Progreso de Nivel</h3>
+              </div>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Nivel {user.nivel_usuario}
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-slate-300 font-medium">
+                <span>{user.xp_nivel_actual} XP</span>
+                <span className="text-slate-400">{user.xp_proximo_nivel} XP</span>
+              </div>
+              
+              {/* Barra fluida con gradiente */}
+              <div className="w-full h-3.5 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700/60">
+                <div
+                  className="h-full bg-gradient-to-r from-indigo-500 to-rose-500 rounded-full transition-all duration-700 ease-out shadow-sm"
+                  style={{ width: `${porcentajeXP}%` }}
+                />
+              </div>
+
+              <div className="flex justify-between items-center text-[11px] text-slate-400 pt-1">
+                <span>Faltan {user.xp_proximo_nivel - user.xp_nivel_actual} XP para Nivel {user.nivel_usuario + 1}</span>
+                <span className="text-rose-400 font-bold">{porcentajeXP}%</span>
+              </div>
+            </div>
+
+            {/* Meta diaria de estudio */}
+            <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-1.5 text-slate-300">
+                <Target className="w-4 h-4 text-rose-400" />
+                <span>Meta Diaria</span>
+              </div>
+              <span className="font-bold text-emerald-400">
+                {user.meta_diaria} tarjetas / día
+              </span>
+            </div>
+          </div>
+
+          {/* 2. CALENDARIO DE RACHA (DÍAS CONSECUTIVOS) */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Flame className="w-5 h-5 text-amber-500" />
+                <h3 className="font-bold text-white text-sm">Racha Semanal</h3>
+              </div>
+              <span className="text-xs font-bold text-amber-400">
+                {user.racha_actual} días consecutivos
+              </span>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1.5 pt-1">
+              {diasSemana.map((dia, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs transition-all ${
+                      dia.activo
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-sm shadow-amber-500/10'
+                        : 'bg-slate-800 text-slate-500 border border-slate-700/50'
+                    }`}
+                  >
+                    {dia.activo ? <Flame className="w-4 h-4 fill-amber-400" /> : dia.inicial}
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">{dia.inicial}</span>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-[11px] text-slate-400 pt-1 text-center">
+              ¡Récord histórico: <strong className="text-slate-200">{user.racha_maxima} días</strong>! No rompas el hábito.
+            </p>
+          </div>
+
+          {/* 3. SIGUIENTE LECCIÓN RECOMENDADA / CURRÍCULO */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-indigo-400" />
+                  <h3 className="font-bold text-white text-sm">Currículo JLPT N5</h3>
+                </div>
+                <button
+                  onClick={onOpenCurriculum}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-0.5"
+                >
+                  Ver Mapa <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50 space-y-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400">
+                  Lección 4 · Gramática
+                </span>
+                <h4 className="text-sm font-bold text-white">
+                  Partículas は (wa) y が (ga)
+                </h4>
+                <p className="text-xs text-slate-400 line-clamp-2">
+                  Domina la diferencia clave entre el tópico de la oración y el sujeto focal.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={onContinueLesson}
+              className="mt-4 w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2"
+            >
+              <span>Continuar Lección</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+        </div>
+
+        {/* ==================================================================== */}
+        {/* ETAPAS DE RETENCIÓN SRS (PIRÁMIDE DE MEMORIA DE 9 NIVELES)          */}
+        {/* ==================================================================== */}
+        <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-rose-400" />
+              <h3 className="font-bold text-white text-sm">Estado de Retención SRS (Curva de Memoria)</h3>
+            </div>
+            <span className="text-xs text-slate-400">
+              Total aprendidos: <strong className="text-white">{srsStages.aprendiz + srsStages.guru + srsStages.maestro + srsStages.iluminado}</strong>
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+            {/* Aprendiz */}
+            <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-900/30 space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-rose-400">Aprendiz</span>
+                <span className="text-[10px] text-slate-500">Niveles 1-3</span>
+              </div>
+              <div className="text-xl font-black text-rose-200">{srsStages.aprendiz}</div>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-rose-500 h-full rounded-full" style={{ width: '45%' }} />
+              </div>
+            </div>
+
+            {/* Gurú */}
+            <div className="p-3.5 rounded-xl bg-purple-950/20 border border-purple-900/30 space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-purple-400">Gurú</span>
+                <span className="text-[10px] text-slate-500">Niveles 4-6</span>
+              </div>
+              <div className="text-xl font-black text-purple-200">{srsStages.guru}</div>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-purple-500 h-full rounded-full" style={{ width: '60%' }} />
+              </div>
+            </div>
+
+            {/* Maestro */}
+            <div className="p-3.5 rounded-xl bg-blue-950/20 border border-blue-900/30 space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-blue-400">Maestro</span>
+                <span className="text-[10px] text-slate-500">Niveles 7-8</span>
+              </div>
+              <div className="text-xl font-black text-blue-200">{srsStages.maestro}</div>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-blue-500 h-full rounded-full" style={{ width: '30%' }} />
+              </div>
+            </div>
+
+            {/* Iluminado / Dominado */}
+            <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-900/30 space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-amber-400">Dominado</span>
+                <span className="text-[10px] text-slate-500">Nivel 9</span>
+              </div>
+              <div className="text-xl font-black text-amber-200">{srsStages.iluminado}</div>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-amber-400 h-full rounded-full" style={{ width: '80%' }} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

@@ -1,0 +1,38 @@
+# ==============================================================================
+# GITIGNORE: REPOSITORIO PÚBLICO DE GITHUB
+# ==============================================================================
+
+# Dependencias y Compilación Web
+node_modules/
+plataforma-web/node_modules/
+plataforma-web/.next/
+plataforma-web/out/
+.next/
+out/
+build/
+dist/
+
+# Variables de entorno y credenciales
+.env
+.env.local
+.env*.local
+
+# Activos multimedia pesados (>4.6 GB)
+# NOTA: En producción, estos 5,500+ archivos MP3 y PDFs se alojan en Cloudflare R2 / S3 / Supabase Storage.
+# GitHub rechaza archivos >100 MB y limita repositorios a 2 GB.
+/GRAMATICA/
+/ENTRENAMIENTO JLPT/
+/ESCRITURA/
+/MANUALES INDEPENDIENTES/
+/VOCABULARIO/
+*.mp3
+*.pdf
+
+# Logs del sistema y editores
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

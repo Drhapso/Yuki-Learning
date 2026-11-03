@@ -1,0 +1,33 @@
+Un modelo relacional (ideal para PostgreSQL o MySQL) es la arquitectura más sólida para soportar el contenido estructurado del JLPT, el sistema de repaso espaciado (SRS) y las mecánicas de gamificación. Esta estructura divide el sistema en cuatro pilares de datos fundamentales.
+
+Gestión de Usuarios y Perfil
+
+Users: Almacena la identidad y métricas globales del estudiante. Campos: id_usuario (Primary Key), nombre, email, contraseña_hash, experiencia_xp (puntos totales para el ranking), racha_dias_seguidos, ultima_conexion, fecha_creacion.
+
+User_Settings: Preferencias individuales de la plataforma. Campos: id_usuario (Foreign Key), meta_diaria_xp, notificaciones_srs_activas (booleano), tema_oscuro.
+
+Estructura del Plan de Estudios
+
+Levels: Define las etapas del aprendizaje (Introducción, N5, N4, N3, N2, N1). Campos: id_nivel (PK), nombre, descripcion, orden_jerarquia.
+
+Modules: Los bloques temáticos dentro de cada nivel. Campos: id_modulo (PK), id_nivel (FK), titulo, orden_secuencia.
+
+Lessons: Las unidades interactivas. Campos: id_leccion (PK), id_modulo (FK), tipo_leccion (gramática, vocabulario, cultura, kanji), titulo, contenido_json (para renderizar textos y multimedia), xp_recompensa.
+
+Questions: Banco de ejercicios para evaluar cada lección. Campos: id_pregunta (PK), id_leccion (FK), tipo_pregunta (opción múltiple, escritura, emparejamiento), datos_json (enunciado y opciones), respuesta_correcta.
+
+Progreso y Gamificación
+
+User_Progress: Rastrea el avance exacto en el temario. Campos: id (PK), id_usuario (FK), id_leccion (FK), estado (bloqueada, desbloqueada, completada), calificacion_obtenida, fecha_finalizacion.
+
+Achievements: Catálogo global de medallas e hitos. Campos: id_logro (PK), nombre_logro, descripcion_requisito, icono_url.
+
+User_Achievements: Relación de medallas desbloqueadas por cada estudiante. Campos: id_usuario (FK), id_logro (FK), fecha_desbloqueo.
+
+Motor del Sistema de Repaso Espaciado (SRS)
+
+Study_Items: El catálogo universal de elementos a memorizar, independiente de las lecciones. Campos: id_item (PK), tipo (kanji, vocabulario), caracter_japones, significado_espanol, lectura_onyomi, lectura_kunyomi, nivel_jlpt.
+
+User_SRS_Reviews: La tabla dinámica que controla cuándo el usuario vuelve a ver una tarjeta. Campos: id_usuario (FK), id_item (FK), nivel_memoria (entero del 1 al 9, desde "Novato" hasta "Maestro"), proxima_revision_fecha (Timestamp), aciertos_consecutivos, errores_totales.
+
+Esta arquitectura permite realizar cruces de datos eficientes, como filtrar la tabla User_SRS_Reviews para cargar automáticamente la sesión diaria con los ítems cuya proxima_revision_fecha sea igual o anterior a la hora actual del servidor.
