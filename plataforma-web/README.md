@@ -1,4 +1,4 @@
-# Yuki Learning 🌸 · Plataforma Web Frontend (Next.js 16 + React 19)
+# Yuki Learning 🌸 · Código Fuente Frontend (Next.js 16 + React 19)
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.3-blue?style=flat&logo=react)](https://react.dev/)
@@ -6,52 +6,40 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 [![Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare_Pages-F38020?style=flat&logo=cloudflare)](https://pages.cloudflare.com/)
 
-Código fuente de la aplicación cliente y API de **Yuki Learning (雪ラーニング)**, una plataforma web moderna para aprender japonés desde cero hasta el nivel **JLPT N1**, con mecánicas de gamificación, currículo dinámico por niveles, lecciones en 2 fases sin spoilers y Sistema de Repaso Espaciado (SRS).
+Código fuente y componentes cliente de **Yuki Learning (雪ラーニング)**, plataforma web interactiva y responsiva para el aprendizaje del idioma japonés (JLPT N5 a N1) con gamificación, repetición espaciada (SRS) y sincronización multidispositivo.
+
+> 📖 **Para la guía técnica completa de arquitectura, modelo de base de datos relacional y configuración con Cloudflare R2:**  
+> 👉 Consulta el documento **[DOCUMENTACION_TECNICA.md](../docs/DOCUMENTACION_TECNICA.md)** en el directorio `docs/`.
 
 ---
 
-## 🏗️ Arquitectura de Componentes
+## 🏗️ Módulos y Componentes de la Aplicación
 
-* **`src/app/`**: Next.js App Router (Layout principal, página de inicio y endpoint de streaming de audio `/api/audio/[...path]`).
 * **`src/components/`**:
-  * **`Dashboard.tsx`**: Panel principal con racha diaria, barra de XP, resumen de tarjetas pendientes, desglose de etapas SRS y lección recomendada dinámica.
-  * **`CurriculumMap.tsx`**: Árbol de habilidades con niveles desde Introducción (Hiragana/Katakana) hasta JLPT N1, bloqueo interactivo y recompensas de experiencia.
-  * **`ActiveLesson.tsx`**: Interfaz de lección en dos fases:
-    * *Fase 1*: Tarjeta teórica dinámica con conceptos clave, mnemotecnia, fórmulas gramaticales y ejemplos con audio.
-    * *Fase 2*: Quizzes interactivos con enmascaramiento anti-spoilers (`わたし [ ? ] がくせいです。`), audio y explicaciones contextuales.
-  * **`SRSReview.tsx`**: Interfaz de tarjetas de memoria (Flashcards) con anverso/reverso, calificación de 3 botones (Fácil, Bien, Difícil), atajos de teclado y persistencia inmediata.
-  * **`ProfileSetupModal.tsx`**: Asistente de perfil que permite cargar fotografías personalizadas del usuario (<2.5 MB) con conversión a Base64 y vista previa en tiempo real.
+  * **`Dashboard.tsx`**: Panel principal con racha diaria, XP, lección recomendada y desglose de etapas SRS.
+  * **`CurriculumMap.tsx`**: Árbol de habilidades con niveles desde Introducción (Hiragana/Katakana) hasta N1 con bloqueo dinámico.
+  * **`ActiveLesson.tsx`**: Interfaz de lección en dos fases (Fase 1: Tarjeta teórica interactiva; Fase 2: Quiz anti-spoilers).
+  * **`SRSReview.tsx`**: Interfaz de flashcards con calificaciones (Fácil, Bien, Difícil) y atajos de teclado.
+  * **`AuthModal.tsx`**: Registro, inicio de sesión y sincronización / migración de datos entre computadoras y celulares.
+  * **`ProfileSetupModal.tsx`**: Configuración de perfil con soporte para fotografía de avatar personalizada (<2.5 MB).
 * **`src/lib/`**:
-  * **`storage.ts`**: Motor de persistencia en `localStorage` para perfil, currículo dinámico y mazo SRS.
-  * **`srs.ts`**: Algoritmo matemático SRS (curva de olvido con 9 niveles de retención).
-  * **`audio.ts`**: Yuki Audio Engine híbrido con Web Speech API (fonética japonesa limpia) y Web Audio API (efectos de sonido sintetizados).
-  * **`lessonsData.ts`**: Contenido pedagógico estructurado para lecciones de Hiragana, Katakana, demostrativos, partículas (*wa*, *ga*, *wo*), verbos en *-masu*, primeros kanjis y la forma *-Te*.
-* **`src/types/`**: Definiciones completas de interfaces TypeScript.
-* **`database/schema.sql`**: Esquema relacional PostgreSQL / Supabase con Row Level Security (RLS).
+  * **`storage.ts`**: Motor de persistencia en `localStorage` con retrocompatibilidad.
+  * **`auth.ts`**: Criptografía SHA-256 en navegador y generador de claves de migración Base64.
+  * **`srs.ts`**: Algoritmo matemático de 9 niveles basado en la curva del olvido.
+  * **`audio.ts`**: Yuki Audio Engine con resolución automática hacia Cloudflare R2 y síntesis Web Speech.
+  * **`lessonsData.ts`**: Contenidos pedagógicos completos para lecciones de escritura, gramática y kanji.
 
 ---
 
-## 🚀 Puesta en Marcha
+## 🚀 Comandos Rápidos
 
 ```bash
-# Instalar dependencias
+# 1. Instalar dependencias
 npm install
 
-# Iniciar entorno de desarrollo
+# 2. Iniciar servidor de desarrollo
 npm run dev
 
-# Compilar para producción (Next.js Turbopack)
+# 3. Compilación estática de producción (carpeta out/)
 npm run build
 ```
-
----
-
-## ☁️ Despliegue en Cloudflare Pages
-
-1. Conecta tu repositorio de GitHub en Cloudflare Dashboard.
-2. Parámetros de compilación:
-   * **Framework preset:** `Next.js`
-   * **Root directory:** `plataforma-web`
-   * **Build command:** `npm run build`
-   * **Build output directory:** `.next`
-3. Almacenamiento de audios pesados: Utiliza **Cloudflare R2** para servir archivos `.mp3` de alta fidelidad sin costes por transferencia de datos.

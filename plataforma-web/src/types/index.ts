@@ -135,3 +135,26 @@ export interface SRSFlashcardItem {
   ultimaRevision?: string;
   audioUrl?: string;
 }
+
+// ==========================================
+// TIPOS PARA AUTENTICACIÓN Y MULTI-DISPOSITIVO
+// ==========================================
+export interface UserAccount {
+  id: string;
+  nombre: string;
+  email: string;
+  passwordHash: string;
+  avatar_url?: string;
+  avatar_icon?: string;
+  createdAt: string;
+  lastLoginAt: string;
+}
+
+export interface DeviceSyncPayload {
+  version: number;
+  timestamp: string;
+  user: UserProfile;
+  curriculum: CurriculumLevel[];
+  srsDeck: SRSFlashcardItem[];
+  checksum: string;
+}

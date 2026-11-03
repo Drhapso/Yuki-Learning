@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   UserCog,
   RotateCcw,
+  Smartphone,
 } from 'lucide-react';
 import { UserProfile, SRSDueSummary, SRSStageBreakdown, LessonNode, JLPTLevel } from '../types';
 import { formatNumber } from '../lib/format';
@@ -36,6 +37,7 @@ interface DashboardProps {
   onContinueLesson?: (lessonId?: string) => void;
   onEditProfile?: () => void;
   onResetProfile?: () => void;
+  onOpenAuth?: (mode?: 'login' | 'register' | 'sync') => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -70,6 +72,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onContinueLesson = () => console.log('Continuando lección activa...'),
   onEditProfile = () => console.log('Editar perfil'),
   onResetProfile = () => console.log('Reiniciar perfil'),
+  onOpenAuth = (mode) => console.log('Abrir auth', mode),
 }) => {
   const porcentajeXP = Math.min(
     100,
@@ -133,6 +136,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Nuevo Perfil</span>
+                </button>
+                <span className="text-slate-600">·</span>
+                <button
+                  onClick={() => onOpenAuth && onOpenAuth('sync')}
+                  className="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium transition-colors flex items-center gap-1"
+                  title="Sincronizar progreso con tu celular u otro dispositivo"
+                >
+                  <Smartphone className="w-3 h-3" />
+                  <span>Sincronizar Móvil</span>
                 </button>
               </div>
             </div>
