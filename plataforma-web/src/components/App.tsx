@@ -12,6 +12,7 @@ import {
   UserCog,
   Smartphone,
   LogIn,
+  Trophy,
 } from 'lucide-react';
 import { Dashboard } from './Dashboard';
 import { CurriculumMap } from './CurriculumMap';
@@ -19,6 +20,7 @@ import { ActiveLesson } from './ActiveLesson';
 import { SRSReview } from './SRSReview';
 import { ProfileSetupModal } from './ProfileSetupModal';
 import { AuthModal } from './AuthModal';
+import { JLPTExamSimulator } from './JLPTExamSimulator';
 import {
   loadStoredProfile,
   saveStoredProfile,
@@ -54,7 +56,8 @@ const DEFAULT_GUEST_USER: UserProfile = {
 
 export const App: React.FC = () => {
   const [mounted, setMounted] = useState<boolean>(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'curriculum' | 'lesson' | 'review'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'curriculum' | 'lesson' | 'review' | 'exam'>('dashboard');
+  const [examLevel, setExamLevel] = useState<JLPTLevel>('N2');
   const [user, setUser] = useState<UserProfile>(DEFAULT_GUEST_USER);
   const [curriculum, setCurriculum] = useState<CurriculumLevel[]>([]);
   const [srsDeck, setSrsDeck] = useState<SRSFlashcardItem[]>([]);
@@ -183,6 +186,19 @@ export const App: React.FC = () => {
     setCurrentView('dashboard');
   };
 
+  // Manejador para abrir el simulador de exámenes JLPT
+  const handleStartExam = (level?: JLPTLevel) => {
+    setExamLevel(level || 'N2');
+    setCurrentView('exam');
+  };
+
+  // Manejador al terminar un simulacro oficial
+  const handleFinishExam = (result: any) => {
+    if (result?.xpGanada) {
+      addXP(result.xpGanada);
+    }
+  };
+
   // Métricas dinámicas calculadas en tiempo real desde localStorage
   const srsMetrics = calculateSRSMetrics(srsDeck);
   const recommendedLesson = getRecommendedLesson(curriculum);
@@ -274,6 +290,21 @@ export const App: React.FC = () => {
                 </span>
               )}
             </button>
+
+            <button
+              onClick={() => {
+                setExamLevel(user.nivel_actual_jlpt === 'INTRO' || user.nivel_actual_jlpt === 'N5' ? 'N4' : user.nivel_actual_jlpt);
+                setCurrentView('exam');
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                currentView === 'exam'
+                  ? 'bg-gradient-to-r from-rose-500 to-indigo-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
+              <span>Simulador JLPT</span>
+            </button>
           </div>
 
           {/* Acciones: Sincronizar, Racha, XP y Avatar */}
@@ -340,6 +371,7 @@ export const App: React.FC = () => {
               setActiveLessonId(targetId || recommendedLesson?.lesson.id || 'intro_01');
               setCurrentView('lesson');
             }}
+            onOpenExam={handleStartExam}
             onEditProfile={handleEditProfile}
             onResetProfile={handleResetProfile}
             onOpenAuth={(mode) => {
@@ -357,6 +389,7 @@ export const App: React.FC = () => {
               setCurrentView('lesson');
             }}
             onBackToDashboard={() => setCurrentView('dashboard')}
+            onStartExam={handleStartExam}
           />
         )}
 
@@ -375,12 +408,20 @@ export const App: React.FC = () => {
             onClose={() => setCurrentView('dashboard')}
           />
         )}
+
+        {currentView === 'exam' && (
+          <JLPTExamSimulator
+            initialLevel={examLevel}
+            onFinishExam={handleFinishExam}
+            onClose={() => setCurrentView('dashboard')}
+          />
+        )}
       </main>
 
       {/* ====================================================================== */}
       {/* BARRA INFERIOR FLOTANTE PARA MÓVILES (RESPONSIVE TOUCH NAVIGATION)     */}
       {/* ====================================================================== */}
-      <nav className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/80 px-4 py-2 flex items-center justify-around shadow-2xl">
+      <nav className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-2 flex items-center justify-around shadow-2xl">
         <button
           onClick={() => setCurrentView('dashboard')}
           className={`flex flex-col items-center gap-1 py-1 transition-all ${
@@ -414,6 +455,19 @@ export const App: React.FC = () => {
               {srsMetrics.summary.total}
             </span>
           )}
+        </button>
+
+        <button
+          onClick={() => {
+            setExamLevel(user.nivel_actual_jlpt === 'INTRO' || user.nivel_actual_jlpt === 'N5' ? 'N4' : user.nivel_actual_jlpt);
+            setCurrentView('exam');
+          }}
+          className={`flex flex-col items-center gap-1 py-1 transition-all ${
+            currentView === 'exam' ? 'text-rose-400 font-bold scale-105' : 'text-slate-400'
+          }`}
+        >
+          <Trophy className="w-5 h-5" />
+          <span className="text-[10px]">Examen</span>
         </button>
 
         <button

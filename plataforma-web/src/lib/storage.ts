@@ -7,6 +7,7 @@ import {
   SRSDueSummary,
   SRSStageBreakdown,
   JLPTLevel,
+  ExamSessionResult,
 } from '../types';
 import { calculateNextReview, getEtapaSRS } from './srs';
 import { MOCK_CURRICULUM, MOCK_FLASHCARDS } from './mockData';
@@ -15,6 +16,7 @@ const KEYS = {
   PROFILE: 'yuki_user_profile_v1',
   CURRICULUM: 'yuki_curriculum_v1',
   SRS_DECK: 'yuki_srs_deck_v1',
+  EXAM_RESULTS: 'yuki_exam_results_v1',
   LEGACY_PROFILE: 'nihongo_user_profile_v1',
   LEGACY_CURRICULUM: 'nihongo_curriculum_v1',
   LEGACY_SRS_DECK: 'nihongo_srs_deck_v1',
@@ -50,60 +52,48 @@ export function saveStoredProfile(profile: UserProfile): void {
 
 /**
  * Genera la estructura inicial del currículo según el nivel elegido por el usuario:
- * - Si elige 'INTRO': Comienza estrictamente en Lección 1 de INTRO. Todo lo demás bloqueado.
- * - Si elige 'N5': INTRO queda marcado completado (100%) y N5 comienza en Lección 1.
+ * - Soporta inicio flexible en cualquier nivel ('INTRO', 'N5', 'N4', 'N3', 'N2', 'N1')
+ * - Los niveles anteriores al nivel seleccionado quedan marcados como completados (100%)
+ * - El nivel seleccionado queda desbloqueado con su primera lección lista
  */
 export function getInitialCurriculum(startingLevel: JLPTLevel = 'INTRO'): CurriculumLevel[] {
+  const LEVEL_ORDER: JLPTLevel[] = ['INTRO', 'N5', 'N4', 'N3', 'N2', 'N1'];
+  const targetIndex = LEVEL_ORDER.indexOf(startingLevel);
+  const safeTargetIndex = targetIndex === -1 ? 0 : targetIndex;
+
   return MOCK_CURRICULUM.map((level) => {
-    if (startingLevel === 'INTRO') {
-      if (level.id === 'INTRO') {
-        return {
-          ...level,
-          bloqueado: false,
-          progresoPorcentaje: 0,
-          lecciones: level.lecciones.map((l, idx) => ({
-            ...l,
-            estado: idx === 0 ? 'disponible' : 'bloqueado',
-          })),
-        };
-      }
+    const levelIndex = LEVEL_ORDER.indexOf(level.id);
+
+    if (levelIndex < safeTargetIndex) {
+      // Nivel superado previamente
       return {
         ...level,
-        bloqueado: true,
-        progresoPorcentaje: 0,
-        lecciones: level.lecciones.map((l) => ({ ...l, estado: 'bloqueado' })),
+        bloqueado: false,
+        progresoPorcentaje: 100,
+        lecciones: level.lecciones.map((l) => ({ ...l, estado: 'completado' as const })),
       };
     }
 
-    if (startingLevel === 'N5') {
-      if (level.id === 'INTRO') {
-        return {
-          ...level,
-          bloqueado: false,
-          progresoPorcentaje: 100,
-          lecciones: level.lecciones.map((l) => ({ ...l, estado: 'completado' })),
-        };
-      }
-      if (level.id === 'N5') {
-        return {
-          ...level,
-          bloqueado: false,
-          progresoPorcentaje: 0,
-          lecciones: level.lecciones.map((l, idx) => ({
-            ...l,
-            estado: idx === 0 ? 'disponible' : 'bloqueado',
-          })),
-        };
-      }
+    if (levelIndex === safeTargetIndex) {
+      // Nivel activo inicial
       return {
         ...level,
-        bloqueado: true,
+        bloqueado: false,
         progresoPorcentaje: 0,
-        lecciones: level.lecciones.map((l) => ({ ...l, estado: 'bloqueado' })),
+        lecciones: level.lecciones.map((l, idx) => ({
+          ...l,
+          estado: idx === 0 ? ('disponible' as const) : ('bloqueado' as const),
+        })),
       };
     }
 
-    return level;
+    // Niveles posteriores bloqueados
+    return {
+      ...level,
+      bloqueado: true,
+      progresoPorcentaje: 0,
+      lecciones: level.lecciones.map((l) => ({ ...l, estado: 'bloqueado' as const })),
+    };
   });
 }
 
@@ -111,7 +101,45 @@ export function loadStoredCurriculum(startingLevel?: JLPTLevel): CurriculumLevel
   if (typeof window === 'undefined') return MOCK_CURRICULUM;
   try {
     const raw = localStorage.getItem(KEYS.CURRICULUM) || localStorage.getItem(KEYS.LEGACY_CURRICULUM);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const stored: CurriculumLevel[] = JSON.parse(raw);
+      // Fusión inteligente: incorporar nuevas lecciones añadidas en la plataforma
+      const merged = MOCK_CURRICULUM.map((masterLevel) => {
+        const storedLevel = stored.find((l) => l.id === masterLevel.id);
+        if (!storedLevel) return masterLevel;
+
+        const mergedLessons = masterLevel.lecciones.map((masterLesson) => {
+          const storedLesson = storedLevel.lecciones.find((l) => l.id === masterLesson.id);
+          return storedLesson || masterLesson;
+        });
+
+        // Si el nivel está desbloqueado, asegurar que haya al menos una lección disponible si no están todas completas
+        const hasActive = mergedLessons.some((l) => l.estado === 'disponible' || l.estado === 'en_progreso');
+        const allDone = mergedLessons.every((l) => l.estado === 'completado');
+        if (!storedLevel.bloqueado && !hasActive && !allDone) {
+          const firstLocked = mergedLessons.findIndex((l) => l.estado === 'bloqueado');
+          if (firstLocked !== -1) {
+            mergedLessons[firstLocked] = { ...mergedLessons[firstLocked], estado: 'disponible' };
+          }
+        }
+
+        const completedCount = mergedLessons.filter((l) => l.estado === 'completado').length;
+        const progresoPorcentaje = mergedLessons.length > 0
+          ? Math.round((completedCount / mergedLessons.length) * 100)
+          : storedLevel.progresoPorcentaje;
+
+        return {
+          ...masterLevel,
+          bloqueado: storedLevel.bloqueado,
+          progresoPorcentaje,
+          lecciones: mergedLessons,
+        };
+      });
+
+      saveStoredCurriculum(merged);
+      return merged;
+    }
+
     const initial = getInitialCurriculum(startingLevel || 'INTRO');
     saveStoredCurriculum(initial);
     return initial;
@@ -233,6 +261,27 @@ export function loadStoredSRSDeck(): SRSFlashcardItem[] {
         }
         return card;
       });
+
+      // Fusión inteligente: incorporar nuevas tarjetas añadidas al mazo maestro sin reiniciar las existentes
+      const existingIds = new Set(sanitized.map((c) => c.id));
+      const nowIso = new Date().toISOString();
+      const newCards = MOCK_FLASHCARDS
+        .filter((c) => !existingIds.has(c.id))
+        .map((card) => ({
+          ...card,
+          nivelMemoriaActual: 1,
+          fechaProximaRevision: nowIso,
+          totalAciertos: 0,
+          totalFallos: 0,
+          ultimaRevision: undefined,
+        }));
+
+      if (newCards.length > 0) {
+        const mergedDeck = [...sanitized, ...newCards];
+        saveStoredSRSDeck(mergedDeck);
+        return mergedDeck;
+      }
+
       return sanitized;
     }
 
@@ -392,5 +441,31 @@ export function resetDeviceData(newStartingLevel: JLPTLevel = 'INTRO'): {
   saveStoredSRSDeck(freshDeck);
 
   return { freshProfile, freshCurriculum, freshDeck };
+}
+
+// ============================================================================
+// 6. HISTORIAL DEL SIMULADOR DE EXAMEN OFICIAL JLPT
+// ============================================================================
+
+export function saveStoredExamResult(result: ExamSessionResult): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = loadStoredExamResults();
+    existing.unshift(result);
+    localStorage.setItem(KEYS.EXAM_RESULTS, JSON.stringify(existing.slice(0, 50)));
+  } catch (e) {
+    console.error('Error al guardar resultado de examen:', e);
+  }
+}
+
+export function loadStoredExamResults(): ExamSessionResult[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(KEYS.EXAM_RESULTS);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.error('Error al cargar resultados de examen:', e);
+    return [];
+  }
 }
 

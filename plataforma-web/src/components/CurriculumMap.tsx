@@ -13,20 +13,23 @@ import {
   Award,
   ChevronRight,
   HelpCircle,
+  Trophy,
 } from 'lucide-react';
-import { CurriculumLevel, LessonNode } from '../types';
+import { CurriculumLevel, LessonNode, JLPTLevel } from '../types';
 import { MOCK_CURRICULUM } from '../lib/mockData';
 
 interface CurriculumMapProps {
   curriculum?: CurriculumLevel[];
   onSelectLesson?: (lessonId: string) => void;
   onBackToDashboard?: () => void;
+  onStartExam?: (level: JLPTLevel) => void;
 }
 
 export const CurriculumMap: React.FC<CurriculumMapProps> = ({
   curriculum = MOCK_CURRICULUM,
   onSelectLesson = (id) => console.log('Seleccionada lección:', id),
   onBackToDashboard = () => console.log('Volver al Dashboard'),
+  onStartExam = (level) => console.log('Iniciar examen:', level),
 }) => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 font-sans">
@@ -126,6 +129,19 @@ export const CurriculumMap: React.FC<CurriculumMapProps> = ({
                     <p className="text-xs md:text-sm text-slate-400 max-w-2xl leading-relaxed">
                       {level.descripcion}
                     </p>
+
+                    {/* Botón de acceso directo al Simulacro Oficial del Nivel */}
+                    {level.id !== 'INTRO' && (
+                      <div className="pt-2">
+                        <button
+                          onClick={() => onStartExam(level.id)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-rose-600 border border-slate-700 hover:border-rose-500 text-xs font-bold text-white transition-all shadow-sm"
+                        >
+                          <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Simulacro Oficial JLPT {level.id}</span>
+                        </button>
+                      </div>
+                    )}
 
                     {/* Barra de Progreso del Nivel si está desbloqueado */}
                     {isUnlocked && (

@@ -1,6 +1,12 @@
 import { ActiveLessonContent } from '../types';
+import { N4_LESSONS } from './lessonsN4';
+import { N3_LESSONS } from './lessonsN3';
+import { N2_N1_LESSONS } from './lessonsN2N1';
 
 export const MASTER_LESSONS: Record<string, ActiveLessonContent> = {
+  ...N4_LESSONS,
+  ...N3_LESSONS,
+  ...N2_N1_LESSONS,
   // ==========================================================================
   // LECCIÓN INTRO 01: SILABARIO HIRAGANA
   // ==========================================================================

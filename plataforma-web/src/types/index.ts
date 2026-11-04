@@ -158,3 +158,62 @@ export interface DeviceSyncPayload {
   srsDeck: SRSFlashcardItem[];
   checksum: string;
 }
+
+// ==========================================
+// TIPOS PARA EL SIMULADOR DE EXAMEN OFICIAL JLPT
+// ==========================================
+export type ExamSectionType = 'gengo_chishiki' | 'dokkai' | 'choukai';
+
+export interface ExamQuestion {
+  id: string;
+  seccion: ExamSectionType;
+  mondaiNumero: number; // Ej: Mondai 1
+  mondaiTitulo: string; // Ej: 漢字読み (Lectura de kanji), 課題理解 (Comprensión de tareas)
+  instruccion: string; // Pregunta o enunciado
+  pasajeLectura?: string; // Lectura para Dokkai
+  audioUrl?: string; // Audio oficial MP3 para Choukai
+  dialogoScript?: string; // Transcripción del diálogo para revisión
+  caracterPrincipal?: string; // Foco de la pregunta
+  opciones: string[];
+  indiceCorrecto: number;
+  explicacion: string;
+  puntos: number;
+}
+
+export interface JLPTExamData {
+  id: string;
+  nivel: JLPTLevel;
+  titulo: string;
+  subtitulo: string;
+  descripcion: string;
+  tiempoTotalMinutos: number;
+  puntajeMaximoTotal: number; // 180
+  puntajeAprobatorio: number; // N1: 100, N2: 90, N3: 95, N4: 90, N5: 80
+  puntajeMinimoSeccion: number; // 19 pts (baremo oficial)
+  secciones: {
+    tipo: ExamSectionType;
+    nombre: string;
+    subtitulo: string;
+    tiempoMinutos?: number;
+    puntajeMaximo: number; // 60
+  }[];
+  preguntas: ExamQuestion[];
+}
+
+export interface ExamSessionResult {
+  examId: string;
+  nivel: JLPTLevel;
+  puntajeTotal: number;
+  aprobado: boolean;
+  motivoReprobacion?: string;
+  puntajePorSeccion: Record<ExamSectionType, {
+    obtenido: number;
+    maximo: number;
+    porcentaje: number;
+    aprobado: boolean;
+  }>;
+  respuestasUsuario: Record<string, number>;
+  tiempoEmpleadoSegundos: number;
+  fecha: string;
+  xpGanada: number;
+}

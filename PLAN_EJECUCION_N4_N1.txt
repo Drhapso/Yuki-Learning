@@ -111,12 +111,13 @@ ETAPA 5 (Versión 2.0: Perfeccionamiento y Contenido Avanzado N2 / N1)
 3. Biblioteca de lecturas auténticas (ensayos culturales y artículos adaptados).
 
 =============================================================================
-3. CHECKLIST INMEDIATO PARA LA PRÓXIMA SESIÓN
+3. CHECKLIST INMEDIATO - ESTADO DE EJECUCIÓN (COMPLETADO AL 100%)
 =============================================================================
-[ ] Paso 1: Abrir 'lessonsData.ts' y crear la estructura modular para el bloque N4.
-[ ] Paso 2: Configurar las primeras 10 lecciones de N4 con audios vinculados a Cloudflare R2.
-[ ] Paso 3: Añadir lote de 100 kanjis de N4 a 'src/lib/srs.ts' o 'kanjiData.ts'.
-[ ] Paso 4: Validar en mobile y desktop la navegación fluida entre niveles N5 y N4.
-[ ] Paso 5: Probar compilación estática ('npm run build') y verificar despliegue en Cloudflare Pages.
+[x] Paso 1: Abrir 'lessonsData.ts' y crear la estructura modular para el bloque N4, N3, N2 y N1 ('lessonsN4.ts', 'lessonsN3.ts', 'lessonsN2N1.ts').
+[x] Paso 2: Configurar las 10 lecciones nucleares de N4 con teoría completa, preguntas interactivas y audios vinculados a Cloudflare R2 / Irodori.
+[x] Paso 3: Expandir el mazo SRS en 'kanjiDeckData.ts' con kanjis, vocabulario y expresiones clave de N4 y N3 con lecturas On/Kun y nemotécnicas.
+[x] Paso 4: Implementar el módulo "Simulador de Exámenes Oficiales JLPT" ('JLPTExamSimulator.tsx' y 'examsData.ts') para N4, N3, N2 y N1 con cronómetro oficial, Choukai (listening con audio oficial nativo), Dokkai y Gengo Chishiki con baremo oficial de 180 puntos y corte de 19 puntos.
+[x] Paso 5: Validar en mobile y desktop la navegación fluida entre niveles N5 a N1 en Navbar, Dashboard y CurriculumMap.
+[x] Paso 6: Compilación estática ('npm run build') verificada con 100% de éxito en Turbopack Next.js 16 para Cloudflare Pages.
 =============================================================================
 
