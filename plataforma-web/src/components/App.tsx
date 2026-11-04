@@ -21,6 +21,7 @@ import { SRSReview } from './SRSReview';
 import { ProfileSetupModal } from './ProfileSetupModal';
 import { AuthModal } from './AuthModal';
 import { JLPTExamSimulator } from './JLPTExamSimulator';
+import { IntroSplash } from './IntroSplash';
 import {
   loadStoredProfile,
   saveStoredProfile,
@@ -56,6 +57,7 @@ const DEFAULT_GUEST_USER: UserProfile = {
 
 export const App: React.FC = () => {
   const [mounted, setMounted] = useState<boolean>(false);
+  const [showIntro, setShowIntro] = useState<boolean>(true);
   const [currentView, setCurrentView] = useState<'dashboard' | 'curriculum' | 'lesson' | 'review' | 'exam'>('dashboard');
   const [examLevel, setExamLevel] = useState<JLPTLevel>('N2');
   const [user, setUser] = useState<UserProfile>(DEFAULT_GUEST_USER);
@@ -220,6 +222,8 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Animación de apertura sin sonido al ingresar a la plataforma */}
+      {showIntro && <IntroSplash onFinished={() => setShowIntro(false)} />}
       
       {/* ====================================================================== */}
       {/* NAVBAR GLOBAL DE LA PLATAFORMA (DESKTOP & TABLET & MOBILE TOP)         */}
