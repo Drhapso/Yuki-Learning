@@ -9,7 +9,7 @@ interface IntroSplashProps {
 
 export const IntroSplash: React.FC<IntroSplashProps> = ({
   onFinished,
-  videoSrc = '/intro_page.mp4',
+  videoSrc = '/intro_page_clean.mp4',
 }) => {
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -26,18 +26,17 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({
     }, 600);
   };
 
-  // Ajustar la velocidad a 3 segundos máximo
+  // Reproducción a velocidad natural de 3.0s (video pre-optimizado)
   const applyAcceleratedPlayback = () => {
     const video = videoRef.current;
     if (video) {
       video.muted = true;
       video.playsInline = true;
-      // Si el video dura ~10s, velocidad ~3.33x para finalizar en exactamente 3.0s
       const targetDuration = 3.0;
-      const speed = video.duration && video.duration > 0
-        ? Math.max(1, video.duration / targetDuration)
-        : 3.33;
-      video.playbackRate = speed;
+      const speed = video.duration && video.duration > 3.5
+        ? video.duration / targetDuration
+        : 1.0;
+      video.playbackRate = Math.max(1.0, speed);
     }
   };
 
@@ -53,10 +52,10 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({
       }
     }
 
-    // Temporizador de rescate fijado a 3.2 segundos máximo
+    // Temporizador de rescate fijado a 3.3 segundos
     const timer = setTimeout(() => {
       handleFinish();
-    }, 3200);
+    }, 3300);
 
     return () => {
       clearTimeout(timer);
@@ -70,22 +69,25 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({
         isFadingOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
-      {/* Halo de luz suave difuminado alrededor del video */}
-      <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-rose-500/25 to-indigo-500/25 blur-3xl pointer-events-none animate-pulse" />
+      {/* Halo de luz difuminado con tono sutil sakura y noche índigo */}
+      <div className="absolute w-80 h-80 sm:w-[28rem] sm:h-[28rem] rounded-full bg-gradient-to-tr from-rose-500/20 via-indigo-500/20 to-sky-400/20 blur-3xl pointer-events-none animate-pulse" />
 
-      {/* Contenedor del video con esquinas redondeadas, sombra y transparencia integrada */}
-      <div className="relative z-10 max-w-4xl max-h-[82vh] w-auto h-auto flex items-center justify-center">
+      {/* Contenedor transparente donde solo flota el logotipo y texto en movimiento */}
+      <div className="relative z-10 max-w-3xl max-h-[80vh] w-auto h-auto flex items-center justify-center pointer-events-none">
         <video
           ref={videoRef}
-          src={videoSrc}
           autoPlay
           muted
           playsInline
           onLoadedMetadata={applyAcceleratedPlayback}
           onEnded={handleFinish}
           onError={handleFinish}
-          className="max-h-[80vh] max-w-[92vw] sm:max-w-3xl w-auto h-auto object-contain rounded-3xl shadow-2xl ring-1 ring-white/10"
-        />
+          className="max-h-[75vh] max-w-[90vw] sm:max-w-2xl w-auto h-auto object-contain mix-blend-screen drop-shadow-[0_0_35px_rgba(255,255,255,0.25)]"
+        >
+          <source src="/intro_page_clean.webm" type="video/webm" />
+          <source src="/intro_page_clean.mp4" type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
+        </video>
       </div>
     </div>
   );

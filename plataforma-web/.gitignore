@@ -33,4 +33,5 @@ Thumbs.db
 # Cloudflare Pages build artifacts
 .vercel
 .wrangler
+intro_page_original.mp4
 
