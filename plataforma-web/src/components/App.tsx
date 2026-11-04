@@ -360,9 +360,9 @@ export const App: React.FC = () => {
       </nav>
 
       {/* ====================================================================== */}
-      {/* VISTA ACTIVA CONDICIONAL (RESPONSIVE CON PADDING INFERIOR PARA MÓVIL)   */}
+      {/* VISTA ACTIVA CONDICIONAL                                              */}
       {/* ====================================================================== */}
-      <main className="flex-1 pb-24 sm:pb-8">
+      <main className="flex-1">
         {currentView === 'dashboard' && (
           <Dashboard
             user={user}
@@ -421,6 +421,15 @@ export const App: React.FC = () => {
           />
         )}
       </main>
+
+      {/* ====================================================================== */}
+      {/* PIE DE PÁGINA (COPYRIGHT Y LICENCIA MIT)                               */}
+      {/* ====================================================================== */}
+      <footer className="w-full border-t border-slate-900 bg-slate-950/80 py-6 px-4 text-center text-xs text-slate-500 pb-24 sm:pb-6">
+        <p className="font-medium tracking-wide">
+          &quot;Yuki Learning App&quot; - Creada por Drhapso® Bajo licencia MIT. 2026
+        </p>
+      </footer>
 
       {/* ====================================================================== */}
       {/* BARRA INFERIOR FLOTANTE PARA MÓVILES (RESPONSIVE TOUCH NAVIGATION)     */}
