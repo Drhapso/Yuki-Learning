@@ -67,6 +67,9 @@ export const metadata: Metadata = {
     description:
       'Plataforma web de código abierto: lecciones interactivas, repaso espaciado y simulacros oficiales de examen JLPT con audio nativo.',
   },
+  verification: {
+    google: 'Mn8xCe83xQIBQEiJ6AYbvj-iWj8ceVbQSzLUw4n8DgU',
+  },
   alternates: {
     canonical: '/',
   },
@@ -155,6 +158,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="Mn8xCe83xQIBQEiJ6AYbvj-iWj8ceVbQSzLUw4n8DgU" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
