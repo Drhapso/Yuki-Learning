@@ -223,3 +223,39 @@ Para evitar la dependencia estricta de un servidor backend activo y permitir que
    npm run build
    ```
 
+---
+
+## 9. Registro de Versiones y Changelog
+
+### Versión 1.0.1 Estable (Noviembre 2026)
+* **Simulador Oficial de Exámenes JLPT**:
+  * Componente interactivo [`JLPTExamSimulator.tsx`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/components/JLPTExamSimulator.tsx) y base de datos de preguntas [`examsData.ts`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/lib/examsData.ts).
+  * Soporte oficial para simulación completa en niveles N4, N3, N2 y N1.
+  * Cronómetro oficial regresivo por nivel y módulo.
+  * Módulo de comprensión auditiva (*Choukai*) con reproducción de audios nativos reales en MP3.
+  * Módulos de lectura comprensiva (*Dokkai*) y conocimiento del lenguaje (*Gengo Chishiki*).
+  * Algoritmo de baremo oficial de 180 puntos con corte eliminatorio de 19 puntos por sección.
+* **Ampliación Curricular Completa de N4 a N1**:
+  * 10 unidades estructuradas para JLPT N4 ([`lessonsN4.ts`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/lib/lessonsN4.ts)).
+  * 6 unidades intermedias para JLPT N3 ([`lessonsN3.ts`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/lib/lessonsN3.ts)).
+  * Unidades avanzadas para JLPT N2 y N1 ([`lessonsN2N1.ts`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/lib/lessonsN2N1.ts)).
+  * Expansión del mazo universal SRS en [`kanjiDeckData.ts`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/lib/kanjiDeckData.ts).
+* **Animación de Apertura Cinematográfica (Intro Splash)**:
+  * Video de apertura pre-optimizado a 3.0s (`intro_page_clean.mp4` y `intro_page_clean.webm` con canal alfa nativo).
+  * Aislamiento del logotipo de nieve caligráfico y letras en blanco puro con destellos dorados, eliminando el fondo rectangular y fusionándolo sobre la capa translúcida con *backdrop blur*.
+* **SEO y Optimización para Asistentes de IA (GEO)**:
+  * Despliegue de `sitemap.xml` y `robots.txt` con permisos explícitos para GPTBot, PerplexityBot, ClaudeBot, Googlebot y Bingbot.
+  * Especificación de contexto estructurado `llms.txt` y `llms-full.txt`.
+  * Encabezados HTTP `X-Robots-Tag: index, follow` y metaetiqueta de verificación de Google Search Console en [`layout.tsx`](file:///c:/Users/Drhapso/Documents/PROYECTOS%20IA%20INDEPENDIENTES/PLATAFORMA%20DE%20IDIOMAS/JAPON%C3%89S/Recursos%20Organizados/plataforma-web/src/app/layout.tsx).
+* **Pie de Página y Derechos de Autor**:
+  * Marca de copyright oficial: `"Yuki Learning App" - Creada por Drhapso® Bajo licencia MIT. 2026`.
+  * Posicionamiento responsivo con padding dinámico para móviles (`pb-24 sm:pb-6`).
+* **Refinamiento del Algoritmo SRS**:
+  * Corrección en el cálculo de tarjetas activas/aprendidas para nuevos perfiles.
+  * Ventana emergente pedagógica al finalizar el ciclo de repaso diario.
+
+---
+
+**"Yuki Learning App" - Creada por Drhapso® Bajo licencia MIT. 2026**
+
+
