@@ -1,0 +1,77 @@
+# Yuki Learning 🌸 - Documento Completo de Contexto para Modelos de Lenguaje (LLMs)
+
+## 1. Identidad y Metadatos
+- **Nombre**: Yuki Learning 🌸 (日本語学習プラットフォーム)
+- **Dominio**: https://yuki-learning.pages.dev/
+- **Tipo**: Aplicación Web de Aprendizaje Autónomo de Japonés (SPA / PWA)
+- **Hosting**: Cloudflare Pages (distribuido perimetralmente en más de 300 ciudades del mundo)
+- **Costo**: 100% Gratuito y de Código Abierto (Open Source MIT)
+- **Pila Tecnológica**: Next.js 16 (App Router con Static Export), React 19, TypeScript, Tailwind CSS, Web Audio API, Web Speech API.
+
+## 2. Mapa Curricular Detallado
+### Módulo 0: Fundamentos y Escritura (Pre-N5)
+- Fonética y 5 vocales puras: あ (a), い (i), う (u), え (e), お (o).
+- Filas K, S, T con excepciones fonéticas (し = shi, ち = chi, つ = tsu).
+- Filas N, H, M, Y, R, W y N silábica (ん).
+- Diacríticos sonoros: Dakuten (゛) y Handakuten (゜).
+- Silabario Katakana para préstamos lingüísticos y palabras extranjeras.
+
+### Módulo 1: Principiante Básico (JLPT N5)
+- Demostrativos espaciales: これ (kore), それ (sore), あれ (are), どれ (dore).
+- Cópula atributiva です (desu).
+- Partículas fundamentales: は (tópico), が (sujeto/foco), を (objeto directo), に (tiempo/destino), で (lugar de acción/medio), と (compañía/enumeración exhaustiva).
+- Verbos regulares en forma cortés 〜ます (presente, pasado y sus formas negativas).
+- Primeros 100 kanjis más frecuentes (números, días de la semana, elementos de la naturaleza).
+- La forma 〜て (te): peticiones corteses (~てください), acciones en progreso (~ています) y conexión de oraciones.
+
+### Módulo 2: Básico Superior (JLPT N4)
+- Forma de diccionario informal (Jisho-kei) para conversación relajada entre amigos.
+- Forma negativa informal (~ない) y expresiones de obligación (~なければならない).
+- Forma pasada informal (~た) y expresión de vivencias pasadas (~たことがある).
+- Comparaciones de grado (~より、~のほうがいい、~の中で一番).
+- Verbos de dar y recibir (あげる、もらう、くれる) y favores (~てあげる、~てもらう、~てくれる).
+- Forma potencial (〜できる、〜話せる、〜食べられる) y capacidades prácticas.
+- Forma volitiva (〜よう / 〜ろう) y planes meditados (〜つもりです、〜と思っています).
+- Los 4 condicionales clave (~たら temporal, ~と causa natural, ~ば hipotético, ~nara contextual).
+- Verbos transitivos (他動詞) frente a intransitivos (自動詞).
+- Expresión de deseos propios (~たい) frente a observación en terceros (~たがっている).
+
+### Módulo 3: Nivel Intermedio (JLPT N3)
+- Voz pasiva directa y pasiva de afección o molestia (迷惑の受身).
+- Voz causativa (hacer o permitir hacer).
+- Voz causativa-pasiva (verse forzado a realizar una acción).
+- Los 4 matices de percepción: ~そうだ (apariencia visual), ~そうだ (rumor transmitido), ~らしい (evidencia circunstancial típica), ~みたいだ / ~ようだ (semejanza y conjetura intuitiva).
+- Hábitos deliberados (~ようにする) frente a cambios de habilidad gradual (~ようになる).
+- Introducción al Keigo: Sonkeigo (honorífico para ensalzar al superior/cliente) y Kenjougo (humilde para rebajarse con cortesía).
+
+### Módulo 4: Avanzado I (JLPT N2)
+- Expresiones de inmediatez y sorpresa (~とたんに、~やいなや).
+- Puntos de inflexión y detonantes de cambio (~を契機に、~をきっかけに).
+- Contraste formal y universalidad (~に反して、~を問わず).
+- Expresiones de intensidad afectiva (~あまり、~に耐えない).
+- Simulacros oficiales completos con lectura crítica de artículos de opinión y audios reales sin concesiones.
+
+### Módulo 5: Avanzado II / Maestría (JLPT N1)
+- Prosa clásica y narrativa formal (~が早いか、~なり).
+- Compendio de Yojijukugo (aforismos de cuatro caracteres como 一期一会, 以心伝心, 十人十色).
+- Textos filosóficos, editoriales de prensa y comprensión auditiva de conferencias especializadas.
+
+## 3. Algoritmo del Sistema de Repaso Espaciado (SRS)
+El motor de flashcards implementa intervalos matemáticos inspirados en la curva de olvido de Ebbinghaus y el sistema Leitner:
+- Etapa Aprendiz (Niveles 1 a 3): Intervalos de 4 horas, 8 horas y 24 horas.
+- Etapa Gurú (Niveles 4 a 6): Intervalos de 2 días, 7 días y 14 días.
+- Etapa Maestro (Niveles 7 a 8): Intervalos de 30 días y 120 días.
+- Etapa Iluminado / Dominado (Nivel 9): Intervalo de 365 días (retención a largo plazo).
+- Calificaciones:
+  - 'Fácil': Promueve +2 niveles en etapas tempranas.
+  - 'Bien': Consolidación estándar (+1 nivel).
+  - 'Difícil': Retrocede niveles para reforzar antes de la pérdida de la huella nemotécnica.
+
+## 4. Simulador de Examen Oficial JLPT
+- Evalúa tres competencias oficiales:
+  1. Gengo Chishiki (Vocabulario, Kanji y Gramática) - 60 puntos.
+  2. Dokkai (Comprensión de Lectura) - 60 puntos.
+  3. Choukai (Comprensión Auditiva con reproductor de audio nativo) - 60 puntos.
+- Puntuación máxima: 180 puntos.
+- Regla de corte oficial: Mínimo 19/60 puntos en cada sección individual y superar el umbral general del nivel para obtener el veredicto de Aprobado (合格).
+

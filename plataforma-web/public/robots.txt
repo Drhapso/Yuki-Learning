@@ -1,0 +1,49 @@
+# =============================================================================
+# Yuki Learning 🌸 - robots.txt
+# Permite el rastreo e indexación para Motores de Búsqueda y Asistentes de IA
+# =============================================================================
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# -----------------------------------------------------------------------------
+# BOTS DE ASISTENTES DE IA Y BÚSQUEDA GENERATIVA (AI SEARCH & LLMs)
+# -----------------------------------------------------------------------------
+# OpenAI (ChatGPT & SearchGPT)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+Allow: /
+
+# Google (Gemini & Vertex AI)
+User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Microsoft Copilot / Bing
+User-agent: Bingbot
+Allow: /
+
+# -----------------------------------------------------------------------------
+# MAPA DEL SITIO Y DOCUMENTACIÓN PARA MODELOS DE LENGUAJE (LLMS)
+# -----------------------------------------------------------------------------
+Sitemap: https://yuki-learning.pages.dev/sitemap.xml
+
+# Estándar llms.txt para asistentes de IA:
+# https://yuki-learning.pages.dev/llms.txt
+# https://yuki-learning.pages.dev/llms-full.txt
+

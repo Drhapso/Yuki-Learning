@@ -1,0 +1,32 @@
+# Yuki Learning 🌸
+
+> Plataforma web gratuita y de código abierto para el aprendizaje autodidacta del idioma japonés, preparación para los exámenes oficiales JLPT (desde N5 hasta N1), Sistema de Repaso Espaciado (SRS) y simulacros de examen cronometrados con audio nativo.
+
+- **URL del proyecto**: https://yuki-learning.pages.dev/
+- **Público objetivo**: Hispanohablantes que desean dominar el japonés de forma rigurosa, desde principiante absoluto hasta nivel profesional avanzado.
+- **Licencia**: Código Abierto (MIT). Gratuita, sin suscripciones de pago y sin recopilación invasiva de datos personales.
+
+## ¿Qué es Yuki Learning?
+Yuki Learning es una aplicación web progresiva (PWA / SPA estática) alojada en la red de Cloudflare Pages, diseñada para resolver la fragmentación del aprendizaje de japonés unificando gramática contextual, kanjis con trazos y lecturas Onyomi/Kunyomi, mazo de repetición espaciada y un simulador de examen real.
+
+## Características Principales
+- **Sistema de Repaso Espaciado (SRS de 9 Etapas)**: Basado en la curva del olvido de Ebbinghaus (Aprendiz I-III, Gurú I-III, Maestro I-II, Iluminado), con cálculo automático de intervalos de 4 horas a 365 días.
+- **Simulador de Examen Oficial JLPT (N4, N3, N2, N1)**: Pruebas estandarizadas con cronómetro regresivo oficial, comprensión auditiva (Choukai) con audios reales, comprensión de lectura (Dokkai) y conocimiento del idioma (Gengo Chishiki), evaluadas con el baremo oficial de 180 puntos y umbral de corte de 19 puntos por sección.
+- **Audios Nativos en Streaming y Fallback TTS**: Motor de audio dual que reproduce grabaciones profesionales de hablantes nativos o sintetiza fonética japonesa limpia.
+- **Gamificación y Racha Diaria**: Puntos de experiencia (XP), niveles de usuario y seguimiento de racha sin anuncios.
+- **Sincronización Cross-Device**: Migración fluida del progreso entre PC, tablet y smartphone mediante payload criptográfico y almacenamiento local.
+
+## Niveles Curriculares Cubiertos
+- **Módulo 0 (Introducción)**: Silabarios Hiragana, Katakana, reglas de fonética y diacríticos (Dakuten/Handakuten).
+- **JLPT N5 (Principiante Básico)**: Supervivencia, cópula です, partículas esenciales (は, が, を, に, で), forma -Masu y forma -Te.
+- **JLPT N4 (Básico Superior)**: Estilo informal de diccionario (Jisho-kei), forma -Nai, obligación, forma -Ta de experiencia, comparaciones (yori), verbos de dar y recibir (ageru/morau/kureru) y condicionales (~tara, ~ba, ~to, ~nara).
+- **JLPT N3 (Intermedio)**: Voz pasiva directa y de afección, voz causativa, causativa-pasiva, matices de conjetura (~sou, ~rashii, ~mitai, ~you da) y Keigo básico.
+- **JLPT N2 (Avanzado I)**: Inmediatez, puntos de inflexión vital, comprensión auditiva a velocidad nativa sin simplificaciones y lectura crítica.
+- **JLPT N1 (Avanzado II / Maestría)**: Prosa clásica, expresiones literarias y compendio de Yojijukugo (locuciones idiomáticas de cuatro caracteres).
+
+## Recursos Pedagógicos Fuente
+- Japan Foundation (Irodori A1, A2-1, A2-2)
+- Marugoto Japanese Language and Culture (A1 a B1)
+- Exámenes oficiales liberados por The Japan Foundation y JEES (Japan Educational Exchanges and Services)
+- NHK World Easy Japanese
+
