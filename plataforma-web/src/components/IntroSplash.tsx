@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight, X } from 'lucide-react';
 
 interface IntroSplashProps {
   onFinished: () => void;
@@ -13,106 +12,79 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({
   videoSrc = '/intro_page.mp4',
 }) => {
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hasFinishedRef = useRef<boolean>(false);
 
-  // Cierre y transición suave de salida
+  // Cierre y transición suave de salida (fade-out de 600ms)
   const handleFinish = () => {
     if (hasFinishedRef.current) return;
     hasFinishedRef.current = true;
     setIsFadingOut(true);
 
-    // Permitir que termine la animación de fade-out (700ms) antes de desmontar
     setTimeout(() => {
       onFinished();
-    }, 700);
+    }, 600);
   };
 
-  // Intentar reproducir automáticamente garantizando muted y playsInline para móviles
-  useEffect(() => {
+  // Ajustar la velocidad a 3 segundos máximo
+  const applyAcceleratedPlayback = () => {
     const video = videoRef.current;
     if (video) {
       video.muted = true;
       video.playsInline = true;
+      // Si el video dura ~10s, velocidad ~3.33x para finalizar en exactamente 3.0s
+      const targetDuration = 3.0;
+      const speed = video.duration && video.duration > 0
+        ? Math.max(1, video.duration / targetDuration)
+        : 3.33;
+      video.playbackRate = speed;
+    }
+  };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      applyAcceleratedPlayback();
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.warn('Autoplay bloqueado por el navegador o interacción requerida:', err);
+          console.warn('Autoplay en intro:', err);
         });
       }
     }
 
-    // Temporizador de seguridad: si el video dura ~10s, garantizar salida a los 11.5s máximo
-    const safetyTimer = setTimeout(() => {
+    // Temporizador de rescate fijado a 3.2 segundos máximo
+    const timer = setTimeout(() => {
       handleFinish();
-    }, 11500);
+    }, 3200);
 
     return () => {
-      clearTimeout(safetyTimer);
+      clearTimeout(timer);
     };
   }, []);
 
-  const handleTimeUpdate = () => {
-    const video = videoRef.current;
-    if (video && video.duration) {
-      const pct = (video.currentTime / video.duration) * 100;
-      setProgress(pct);
-    }
-  };
-
   return (
     <div
-      className={`fixed inset-0 z-50 bg-black flex flex-col items-center justify-center overflow-hidden select-none transition-opacity duration-700 ease-in-out ${
-        isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      onClick={handleFinish}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden cursor-pointer select-none transition-all duration-600 ease-out bg-slate-950/65 backdrop-blur-md ${
+        isFadingOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
-      {/* Fondo ambiental difuminado para pantallas verticales (móviles) o ultra-anchas */}
-      <div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
-        <video
-          src={videoSrc}
-          autoPlay
-          muted
-          playsInline
-          loop
-          className="w-full h-full object-cover blur-3xl scale-125"
-        />
-      </div>
+      {/* Halo de luz suave difuminado alrededor del video */}
+      <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-rose-500/25 to-indigo-500/25 blur-3xl pointer-events-none animate-pulse" />
 
-      {/* Botón flotante para omitir la introducción */}
-      <button
-        onClick={handleFinish}
-        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/70 hover:bg-slate-800/90 border border-slate-700/60 hover:border-slate-500 text-xs font-semibold text-slate-200 hover:text-white backdrop-blur-md shadow-2xl transition-all hover:scale-105 active:scale-95"
-        title="Omitir introducción y entrar a la plataforma"
-      >
-        <span>Omitir</span>
-        <ArrowRight className="w-3.5 h-3.5" />
-      </button>
-
-      {/* Contenedor central del video con preservación estricta de relación de aspecto */}
-      <div
-        onClick={handleFinish}
-        className="relative z-20 w-full h-full flex items-center justify-center p-0 sm:p-4 cursor-pointer"
-        title="Toca para entrar"
-      >
+      {/* Contenedor del video con esquinas redondeadas, sombra y transparencia integrada */}
+      <div className="relative z-10 max-w-4xl max-h-[82vh] w-auto h-auto flex items-center justify-center">
         <video
           ref={videoRef}
           src={videoSrc}
           autoPlay
           muted
           playsInline
+          onLoadedMetadata={applyAcceleratedPlayback}
           onEnded={handleFinish}
           onError={handleFinish}
-          onTimeUpdate={handleTimeUpdate}
-          className="w-full h-full max-h-screen object-contain shadow-2xl"
-        />
-      </div>
-
-      {/* Barra de progreso sutil inferior */}
-      <div className="absolute bottom-0 inset-x-0 h-1 bg-slate-900/50 z-30">
-        <div
-          className="h-full bg-gradient-to-r from-rose-500 via-indigo-500 to-rose-400 transition-all duration-150 ease-out"
-          style={{ width: `${progress}%` }}
+          className="max-h-[80vh] max-w-[92vw] sm:max-w-3xl w-auto h-auto object-contain rounded-3xl shadow-2xl ring-1 ring-white/10"
         />
       </div>
     </div>
@@ -120,4 +92,3 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({
 };
 
 export default IntroSplash;
-
